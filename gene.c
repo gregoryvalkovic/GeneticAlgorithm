@@ -7,8 +7,19 @@
 #include "gene.h"
 
 int * create_pcbmill_chrom(int numAlleles){
-	/* TO DO */
-	return NULL;
+	int *chrom, i, index;
+	chrom = calloc(numAlleles, sizeof(int));
+
+	/* Loop through possible values excluding zero */
+	for (i=1; i < numAlleles; i++) {
+
+		/* Only place value at index with value zero*/
+		do {
+			index = rand() % numAlleles;
+		} while(chrom[index] != 0);
+		chrom[index] = i;
+	}
+	return chrom;
 }
 
 int * create_minfn_chrom(int numAlleles){
@@ -72,4 +83,3 @@ double gene_get_fitness(Gene *gene){
 void gene_print(Gene *gene) {
 	/* TO DO */
 }
-
