@@ -23,8 +23,15 @@ int * create_pcbmill_chrom(int numAlleles){
 }
 
 int * create_minfn_chrom(int numAlleles){
-	/* TO DO */
-	return NULL;
+	int *chrom, i;
+
+	chrom = malloc(sizeof(int) * numAlleles);
+
+	/* Loop through all indexes and assign a random int */
+	for (i=0; i < numAlleles; i++) {
+		chrom[i] = rand() % (MINFN_MAX + 1);
+	}
+	return chrom;
 }
 
 Gene * mutate_pcbmill(Gene *g){
