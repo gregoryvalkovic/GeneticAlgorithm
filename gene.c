@@ -66,7 +66,15 @@ double eval_minfn(InVTable *invt, Gene *gene){
 
 Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
 	/* TO DO */
-	return NULL;
+	Gene *gene;
+
+	gene = malloc(sizeof(Gene));
+	gene->chromosome = create_chrom(numAlleles);
+	gene->num_alleles = numAlleles;
+	gene->raw_score = 0.0;
+	gene->fitness = 0.0;
+
+	return gene;
 }
 
 void gene_calc_fitness(Gene *gene, EvalFn evaluate_fn, InVTable *invTab){
@@ -78,7 +86,7 @@ void gene_normalise_fitness(Gene *gene, double total_fitness){
 }
 
 void gene_free(Gene *gene){
-	/* TO DO */
+	free(gene);
 }
 
 
@@ -89,4 +97,18 @@ double gene_get_fitness(Gene *gene){
 
 void gene_print(Gene *gene) {
 	/* TO DO */
+	int i;
+
+	printf("chrom:");
+
+	/* Print the allele values */
+	for (i=0; i < gene->num_alleles; i++) {
+		printf("%d");
+		if (i != gene->num_alleles - 1) {
+			printf(",");
+		}else {
+			printf(" ");
+		}
+	}
+	printf("fit: %f raw:  %f\n", gene->fitness, gene->raw_score);
 }
