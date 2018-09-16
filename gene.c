@@ -74,9 +74,16 @@ double eval_pcbmill(InVTable *invt, Gene *gene){
 }
 
 double eval_minfn(InVTable *invt, Gene *gene){
-	/* TO DO */
+	/* TEST */
+	int i;
+	double raw = 0.0;
 
-	return 0.0;
+	/* Iterate through all alleles and multiply with appropriate vector value*/
+	for (i=0; i < gene->num_alleles; i++) {
+		raw += invt->table[i] * gene->chromsome[i];
+	}
+	/* Subtract E and return the absolute value*/
+	return abs(raw - invt->table[i]);
 }
 
 Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
