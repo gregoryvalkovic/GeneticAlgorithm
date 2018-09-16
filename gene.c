@@ -65,7 +65,6 @@ double eval_minfn(InVTable *invt, Gene *gene){
 }
 
 Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
-	/* TO DO */
 	Gene *gene;
 
 	gene = malloc(sizeof(Gene));
@@ -73,7 +72,6 @@ Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
 	gene->num_alleles = numAlleles;
 	gene->raw_score = 0.0;
 	gene->fitness = 0.0;
-
 	return gene;
 }
 
@@ -99,11 +97,11 @@ void gene_print(Gene *gene) {
 	/* TO DO */
 	int i;
 
-	printf("chrom:");
+	printf("chrom: ");
 
 	/* Print the allele values */
 	for (i=0; i < gene->num_alleles; i++) {
-		printf("%d");
+		printf("%d", gene->chromosome[i]);
 		if (i != gene->num_alleles - 1) {
 			printf(",");
 		}else {
