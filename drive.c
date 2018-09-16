@@ -85,10 +85,15 @@ int main(int argc, char *argv[]){
 	}
 	printTable(invt);
 
-
+	printf("pcbmill\n");
 	gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
-
 	gene_print(gene);
+	printf("\n");
+
+	printf("minfn\n");
+	gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_minfn_chrom);
+	gene_print(gene);
+	printf("\n");
 
 
 	return EXIT_SUCCESS;
