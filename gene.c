@@ -55,12 +55,27 @@ Gene * crossover_minfn(Gene *g1, Gene *g2){
 }
 
 double eval_pcbmill(InVTable *invt, Gene *gene){
-	/* TO DO */
-	return 0.0;
+	/* TEST */
+	int i, *currPos, *nextPos;
+	double raw = 0.0;
+
+	/* Iterate through all but last allele */
+	for (i=0; i < gene->num_alleles - 1; i++) {
+
+		/* Lookup current allele and next allele in the table */
+		currPos = invt->table[gene->chromosome[i]];
+		nextPos = invt->table[gene->chromosome[i+1]];
+
+		/* Calculate the distance between both points */
+		raw += sqrt(pow(nextPos[0] - currPos[0], 2) +
+			pow(nextPos[1] - currPos[1], 2));
+	}
+	return raw;
 }
 
 double eval_minfn(InVTable *invt, Gene *gene){
 	/* TO DO */
+
 	return 0.0;
 }
 
