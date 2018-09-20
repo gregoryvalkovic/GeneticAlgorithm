@@ -7,7 +7,6 @@
 #include "invector.h"
 
 void invector_init(InVTable *invt) {
-	/* TO DO */
+	invt->tot = 0;
+    invt->width = INVT_WIDTH;
 }
-
-
