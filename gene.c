@@ -22,6 +22,7 @@ int * create_pcbmill_chrom(int numAlleles){
 	return chrom;
 }
 
+
 int * create_minfn_chrom(int numAlleles){
 	int *chrom, i;
 
@@ -34,19 +35,47 @@ int * create_minfn_chrom(int numAlleles){
 	return chrom;
 }
 
+
 Gene * mutate_pcbmill(Gene *g){
-	/* TO DO */
-	return NULL;
+	int index1, index2, temp;
+	Gene *mutant = gene_init(g->num_alleles);
+
+	/* Copy gene but reset fitness and raw_score */
+	gene_copy(g, mutant);
+	mutant->fitness = 0.0;
+	mutant->raw_score = 0.0;
+
+	#ifdef DEBUG
+		index1 = 2;
+		index2 = 4;
+	#else
+		/* Randomises the indices to swap, looping if they are identical*/
+		index1 = rand() % g->num_alleles;
+		do {
+			index2 = rand() % g->num_alleles;
+		}while (index2 == index1);
+	#endif
+
+	/* Swap the indices */
+	temp = mutant->chromosome[index1];
+	mutant->chromosome[index1] = mutant->chromosome[index2];
+	mutant->chromosome[index2] = temp;
+
+	return mutant;
 }
+
 
 Gene * mutate_minfn(Gene *g){
 	int index;
-	Gene *mutant = malloc(sizeof(Gene));
+	Gene *mutant = gene_init(g->num_alleles);
 
+	/* Copy gene but reset fitness and score */
 	gene_copy(g, mutant);
+	mutant->raw_score = 0.0;
+	mutant->fitness = 0.0;
 
-	/* Set index */
-	#if DEBUG
+	/* Set index to mutate */
+	#ifdef DEBUG
 		index  = 2;
 	#else
 		index = rand() % mutant->num_alleles;
@@ -59,7 +88,48 @@ Gene * mutate_minfn(Gene *g){
 
 Gene * crossover_pcbmill(Gene *g1, Gene *g2){
 	/* TO DO */
-	return NULL;
+	int index1, index2, i, childIndex = 0;
+
+	/* Initialise child gene */
+	Gene *child = gene_init(g1->num_alleles);
+	child->num_alleles = g1->num_alleles;
+
+	#ifdef DEBUG
+		index1 = 2;
+		index2 = 4;
+	#else
+		/* Randomise indices until index2 <= index1*/
+		index1 = rand() % g1->num_alleles;
+		do {
+			index2 = rand() % g1->num_alleles;
+		}while (index1 > index2);
+	#endif
+
+	/* Copy the values in g1 chromosome that are between indices */
+	for (i=index1; i <= index2; i++) {
+		child->chromosome[childIndex] = g1->chromosome[i];
+		childIndex++;
+	}
+
+
+	/* WIP -- Consider 2 for loops that loop over g2. one before index1 and the
+	other after index2. Might be neater*/
+
+	i = 0;
+	/* Loop through child chromomsome */
+	for (; childIndex < child->num_alleles; childIndex++) {
+
+		/* Loop in g2 to find value not already in child */
+		while (chromosomeHas(child, g2->chromosome[i]) &&
+			   i < g2->num_alleles) {
+			i++;
+		}
+		/* Assign the value from g2 and increment i */
+		child->chromosome[childIndex] = g2->chromosome[i];
+		i++;
+	}
+
+	return child;
 }
 
 
@@ -81,7 +151,7 @@ Gene * crossover_minfn(Gene *g1, Gene *g2){
 
 	/* Copy the remaining values from */
 	for (; i < g1->num_alleles; i++) {
-		gCross->chromosome[i] = g1->chromosome[i];
+		gCross->chromosome[i] = g2->chromosome[i];
 	}
 	return gCross;
 }
@@ -106,6 +176,7 @@ double eval_pcbmill(InVTable *invt, Gene *gene){
 	return raw;
 }
 
+
 double eval_minfn(InVTable *invt, Gene *gene){
 	/* TEST */
 	int i;
@@ -119,6 +190,7 @@ double eval_minfn(InVTable *invt, Gene *gene){
 	return abs(raw - invt->table[0][i]);
 }
 
+
 Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
 	Gene *gene;
 
@@ -130,13 +202,16 @@ Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
 	return gene;
 }
 
+
 void gene_calc_fitness(Gene *gene, EvalFn evaluate_fn, InVTable *invTab){
 	/* TO DO */
 }
 
+
 void gene_normalise_fitness(Gene *gene, double total_fitness){
 	/* TO DO */
 }
+
 
 void gene_free(Gene *gene){
 	free(gene->chromosome);
@@ -147,6 +222,7 @@ void gene_free(Gene *gene){
 double gene_get_fitness(Gene *gene){
 	return gene->fitness;
 }
+
 
 void gene_print(Gene *gene) {
 	int i;
@@ -186,4 +262,16 @@ Gene * gene_init(int numAlleles) {
 	gene->raw_score = 0.0;
 	gene->fitness = 0.0;
 	return gene;
+}
+
+
+Boolean chromosomeHas(Gene *g, int x) {
+	int i;
+
+	/* Linear search for x */
+	for (i=0; i < g->num_alleles; i++) {
+		if (g->chromosome[i] == x)
+			return TRUE;
+	}
+	return FALSE;
 }

@@ -53,10 +53,10 @@ void test_minfn(void){
 	/* TO DO - create a random minfn gene by calling create_rand_gene
 	   The length of the gene's chromosome should be TEST_ALLELE_LEN */
 	gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
+	gene_print(gene);
 
 	/* print the gene */
 	printf("\nMutate: ");
-	gene_print(gene);
 
 	/* TO DO - create a mutant copy of the gene using mutate_minfn */
 	mutant = mutate_minfn(gene);
@@ -69,7 +69,7 @@ void test_minfn(void){
 	gene_free(gene);
 	gene_free(mutant);
 
-	printf("MINFN genes:\n");
+	printf("\nMINFN genes:\n");
 	/* TO DO - create 2 random minfn 'parent' genes using calls
 	   to create_rand_gene
 	   The length of the gene's chromosome should be TEST_ALLELE_LEN */
@@ -102,9 +102,9 @@ int main(int argc, char *argv[]){
 	/* The only point at which srand should be called */
 	srand(SRAND_SEED);
 
-	#if DEBUG
+	#ifdef DEBUG
 		test_minfn();
-
+	#else
 		/* Initialise invector table */
 		invector_init(&invt);
 		if (!buildTable(&invt, fileName)) {
