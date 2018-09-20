@@ -41,8 +41,16 @@ Gene * mutate_pcbmill(Gene *g){
 
 Gene * mutate_minfn(Gene *g){
 	/* TO DO */
-	return NULL;
+	int index;
+	Gene *mutant = malloc(sizeof(Gene));
+
+	gene_copy(g, mutant);
+	/* Place random value at random index */
+	index = rand() % mutant->num_alleles;
+	mutant->chromosome[index] = rand() % (MINFN_MAX + 1);
+	return mutant;
 }
+
 
 Gene * crossover_pcbmill(Gene *g1, Gene *g2){
 	/* TO DO */
@@ -80,10 +88,10 @@ double eval_minfn(InVTable *invt, Gene *gene){
 
 	/* Iterate through all alleles and multiply with appropriate vector value*/
 	for (i=0; i < gene->num_alleles; i++) {
-		raw += invt->table[i] * gene->chromsome[i];
+		raw += invt->table[0][i] * gene->chromosome[i];
 	}
 	/* Subtract E and return the absolute value*/
-	return abs(raw - invt->table[i]);
+	return abs(raw - invt->table[0][i]);
 }
 
 Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
@@ -106,6 +114,7 @@ void gene_normalise_fitness(Gene *gene, double total_fitness){
 }
 
 void gene_free(Gene *gene){
+	free(gene->chromosome);
 	free(gene);
 }
 
@@ -131,4 +140,17 @@ void gene_print(Gene *gene) {
 		}
 	}
 	printf("fit: %f raw:  %f\n", gene->fitness, gene->raw_score);
+}
+
+
+void gene_copy(Gene *g1, Gene *g2) {
+	int i;
+
+	g2->num_alleles = g1->num_alleles;
+	g2->raw_score = g1->raw_score;
+	g2->fitness = g1->fitness;
+
+	for (i=0; i < g2->num_alleles; i++) {
+		g2->chromosome[i] = g1->chromosome[i];
+	}
 }
