@@ -20,5 +20,6 @@ typedef enum boolean
 } Boolean;
 
 void * myMalloc(size_t size);
+void * myCalloc(size_t nitems, size_t size);
 
 #endif

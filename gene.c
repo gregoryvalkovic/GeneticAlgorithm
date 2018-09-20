@@ -181,7 +181,7 @@ void gene_copy(Gene *g1, Gene *g2) {
 
 Gene * gene_init(int numAlleles) {
 	Gene *gene = myMalloc(sizeof(Gene));
-	gene->chromosome = myMalloc(sizeof(int) * numAlleles);
+	gene->chromosome = myCalloc(numAlleles, sizeof(int));
 	gene->num_alleles = numAlleles;
 	gene->raw_score = 0.0;
 	gene->fitness = 0.0;
