@@ -46,7 +46,7 @@ void test_pcbmill(void){
 
 void test_minfn(void){
 	/* TO DO */
-	Gene *gene, *mutant;
+	Gene *gene, *mutant, *p1, *p2, *child;
 
 	printf("MINFN gene:\n");
 
@@ -68,18 +68,30 @@ void test_minfn(void){
 	/* TO DO - free the original gene and the mutant */
 	gene_free(gene);
 	gene_free(mutant);
-	
+
 	printf("MINFN genes:\n");
 	/* TO DO - create 2 random minfn 'parent' genes using calls
 	   to create_rand_gene
 	   The length of the gene's chromosome should be TEST_ALLELE_LEN */
+	p1 = gene_create_rand_gene(TEST_ALLELE_LEN, &create_minfn_chrom);
+	p2 = gene_create_rand_gene(TEST_ALLELE_LEN, &create_minfn_chrom);
+
 	/* TO DO - print each gene */
+	gene_print(p1);
+	gene_print(p2);
+
 	printf("\nCrossover: ");
 	/* TO DO produce a new gene by calling crossover_minfn
 	   with the parent genes */
+	child = crossover_minfn(p1, p2);
+
 	/* TO DO - print the new gene */
+	gene_print(child);
 	printf("\n");
 	/* TO DO - free both parents and the child gene */
+	free(p1);
+	free(p2);
+	free(child);
 }
 
 int main(int argc, char *argv[]){
@@ -90,22 +102,27 @@ int main(int argc, char *argv[]){
 	/* The only point at which srand should be called */
 	srand(SRAND_SEED);
 
-	invector_init(&invt);
-	if (!buildTable(&invt, fileName)) {
-		printf("Could not open %s", fileName);
-		return EXIT_FAILURE;
-	}
-	printTable(invt);
+	#if DEBUG
+		test_minfn();
 
-	printf("pcbmill\n");
-	gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
-	gene_print(gene);
-	printf("\n");
+		/* Initialise invector table */
+		invector_init(&invt);
+		if (!buildTable(&invt, fileName)) {
+			printf("Could not open %s", fileName);
+			return EXIT_FAILURE;
+		}
+		printTable(invt);
 
-	printf("minfn\n");
-	gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_minfn_chrom);
-	gene_print(gene);
-	printf("\n");
+		printf("pcbmill\n");
+		gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
+		gene_print(gene);
+		printf("\n");
+
+		printf("minfn\n");
+		gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_minfn_chrom);
+		gene_print(gene);
+		printf("\n");
+	#endif
 
 
 	return EXIT_SUCCESS;
