@@ -46,16 +46,25 @@ void test_pcbmill(void){
 
 void test_minfn(void){
 	/* TO DO */
+	Gene *gene, *mutant;
 
 	printf("MINFN gene:\n");
+
 	/* TO DO - create a random minfn gene by calling create_rand_gene
 	   The length of the gene's chromosome should be TEST_ALLELE_LEN */
+	gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
 
-	/* TO DO - print the gene */
+	/* print the gene */
 	printf("\nMutate: ");
+	gene_print(gene);
+
 	/* TO DO - create a mutant copy of the gene using mutate_minfn */
+	mutant = mutate_minfn(gene);
+
 	/* TO DO - print the mutant gene */
 	printf("\n");
+	gene_print(mutant);
+	
 	/* TO DO - free the original gene and the mutant */
 	printf("MINFN genes:\n");
 	/* TO DO - create 2 random minfn 'parent' genes using calls

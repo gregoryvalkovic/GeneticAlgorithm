@@ -40,13 +40,18 @@ Gene * mutate_pcbmill(Gene *g){
 }
 
 Gene * mutate_minfn(Gene *g){
-	/* TO DO */
 	int index;
 	Gene *mutant = malloc(sizeof(Gene));
 
 	gene_copy(g, mutant);
-	/* Place random value at random index */
-	index = rand() % mutant->num_alleles;
+
+	/* Set index */
+	#if DEBUG
+		index  = 2;
+	#else
+		index = rand() % mutant->num_alleles;
+	#endif
+
 	mutant->chromosome[index] = rand() % (MINFN_MAX + 1);
 	return mutant;
 }
@@ -57,10 +62,30 @@ Gene * crossover_pcbmill(Gene *g1, Gene *g2){
 	return NULL;
 }
 
+
 Gene * crossover_minfn(Gene *g1, Gene *g2){
-	/* TO DO */
-	return NULL;
+	int i, index;
+	Gene *gCross = gene_init(g1->num_alleles);
+
+	/* Set index */
+	#if DEBUG
+		index = 2;
+	#else
+		index = rand() % g1->num_alleles;
+	#endif
+
+	/* Loop to the point of the randomised index and copy */
+	for (i=0; i <= index; i++) {
+		gCross->chromosome[i] = g1->chromosome[i];
+	}
+
+	/* Copy the remaining values from */
+	for (; i < g1->num_alleles; i++) {
+		gCross->chromosome[i] = g1->chromosome[i];
+	}
+	return gCross;
 }
+
 
 double eval_pcbmill(InVTable *invt, Gene *gene){
 	/* TEST */
@@ -120,12 +145,10 @@ void gene_free(Gene *gene){
 
 
 double gene_get_fitness(Gene *gene){
-	/* TO DO */
-	return 0.0;
+	return gene->fitness;
 }
 
 void gene_print(Gene *gene) {
-	/* TO DO */
 	int i;
 
 	printf("chrom: ");
@@ -153,4 +176,14 @@ void gene_copy(Gene *g1, Gene *g2) {
 	for (i=0; i < g2->num_alleles; i++) {
 		g2->chromosome[i] = g1->chromosome[i];
 	}
+}
+
+
+Gene * gene_init(int numAlleles) {
+	Gene *gene = myMalloc(sizeof(Gene));
+	gene->chromosome = myMalloc(sizeof(int) * numAlleles);
+	gene->num_alleles = numAlleles;
+	gene->raw_score = 0.0;
+	gene->fitness = 0.0;
+	return gene;
 }

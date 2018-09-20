@@ -85,4 +85,7 @@ void gene_print(Gene*);
 /* Copies the contents of the first gene into the second gene */
 void gene_copy(Gene *g1, Gene *g2);
 
+/* Creates a pointer to an empty gene with given number of alleles */
+Gene * gene_init(int numAlleles);
+
 #endif
