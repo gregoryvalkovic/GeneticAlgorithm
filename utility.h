@@ -19,4 +19,6 @@ typedef enum boolean
     TRUE
 } Boolean;
 
+void * myMalloc(size_t size);
+
 #endif

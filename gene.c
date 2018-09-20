@@ -25,7 +25,7 @@ int * create_pcbmill_chrom(int numAlleles){
 int * create_minfn_chrom(int numAlleles){
 	int *chrom, i;
 
-	chrom = malloc(sizeof(int) * numAlleles);
+	chrom = myMalloc(sizeof(int) * numAlleles);
 
 	/* Loop through all indexes and assign a random int */
 	for (i=0; i < numAlleles; i++) {
@@ -97,7 +97,7 @@ double eval_minfn(InVTable *invt, Gene *gene){
 Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
 	Gene *gene;
 
-	gene = malloc(sizeof(Gene));
+	gene = myMalloc(sizeof(Gene));
 	gene->chromosome = create_chrom(numAlleles);
 	gene->num_alleles = numAlleles;
 	gene->raw_score = 0.0;
