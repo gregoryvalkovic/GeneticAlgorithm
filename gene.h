@@ -85,4 +85,9 @@ void gene_print(Gene*);
 /* Copies the contents of the first gene into the second gene */
 void gene_copy(Gene *g1, Gene *g2);
 
+/* Creates a pointer to an empty gene with given number of alleles */
+Gene * gene_init(int numAlleles);
+
+/* Check that a given gene's chromosome has the given value */
+Boolean chromosomeHas(Gene *g, int x);
 #endif
