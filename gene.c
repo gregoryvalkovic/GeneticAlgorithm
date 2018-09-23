@@ -111,10 +111,6 @@ Gene * crossover_pcbmill(Gene *g1, Gene *g2){
 		childIndex++;
 	}
 
-
-	/* WIP -- Consider 2 for loops that loop over g2. one before index1 and the
-	other after index2. Might be neater*/
-
 	i = 0;
 	/* Loop through child chromomsome */
 	for (; childIndex < child->num_alleles; childIndex++) {

@@ -15,7 +15,7 @@ Boolean buildTable(InVTable *invt, char *fileName);
 
 void test_pcbmill(void){
 	/* TO DO */
-	Gene *gene;
+	Gene *gene, *mutant, *p1, *p2, *child;
 
 	printf("PCBMILL gene:\n");
 
@@ -27,21 +27,37 @@ void test_pcbmill(void){
 	gene_print(gene);
 
 	printf("\nMutate: ");
+	mutant = mutate_pcbmill(gene);
+	gene_print(mutant);
 	/* TO DO - create a mutant copy of the gene using mutate_pcbmill */
 	/* TO DO - print the mutant gene using gene_print */
 	printf("\n");
 	/* TO DO - free the original gene and the mutant */
+	gene_free(gene);
+	gene_free(mutant);
 	printf("PCBMILL genes:\n");
 	/* TO DO - create 2 random pcbmill 'parent' genes using calls
 	   to create_rand_gene
 	   The length of the gene's chromosome should be TEST_ALLELE_LEN */
+	p1 = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
+	p2 = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
+
 	/* TO DO - print each gene */
+	gene_print(p1);
+	gene_print(p2);
+
 	printf("\nCrossover: ");
+	child = crossover_pcbmill(p1, p2);
+	gene_print(child);
 	/* TO DO produce a new gene by calling crossover_pcbmill
 	   with the parent genes */
 	/* TO DO - print the new gene */
+
 	printf("\n");
 	/* TO DO - free both parents and the child gene */
+	gene_free(p1);
+	gene_free(p2);
+	gene_free(child);
 }
 
 void test_minfn(void){
@@ -95,16 +111,18 @@ void test_minfn(void){
 }
 
 int main(int argc, char *argv[]){
-	char *fileName = argv[inputFile];
-	InVTable invt;
-	Gene *gene;
 
 	/* The only point at which srand should be called */
 	srand(SRAND_SEED);
 
 	#ifdef DEBUG
 		test_minfn();
+		test_pcbmill();
 	#else
+		char *fileName = argv[inputFile];
+		InVTable invt;
+		Gene *gene;
+
 		/* Initialise invector table */
 		invector_init(&invt);
 		if (!buildTable(&invt, fileName)) {
@@ -123,8 +141,6 @@ int main(int argc, char *argv[]){
 		gene_print(gene);
 		printf("\n");
 	#endif
-
-
 	return EXIT_SUCCESS;
 }
 
