@@ -234,7 +234,7 @@ void gene_print(Gene *gene) {
 			printf(" ");
 		}
 	}
-	printf("fit: %f raw:  %f\n", gene->fitness, gene->raw_score);
+	printf("fit: %.3f raw:  %.3f\n", gene->fitness, gene->raw_score);
 }
 
 

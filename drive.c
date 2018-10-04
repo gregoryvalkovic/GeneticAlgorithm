@@ -12,6 +12,13 @@
 /* Function prototypes */
 void printTable(InVTable invt);
 Boolean buildTable(InVTable *invt, char *fileName);
+void inputValidation(int argc, char *argv[]);
+Boolean isMinFn(char *geneType);
+Boolean isPcbMill(char *geneType);
+Boolean isPosIntNonZero(char *num);
+Boolean isPosInt(char *num);
+void myExit(char *errorMessage);
+Boolean isNumber(char *num);
 
 void test_pcbmill(void){
 	/* TO DO */
@@ -111,6 +118,9 @@ void test_minfn(void){
 }
 
 int main(int argc, char *argv[]){
+	InVTable invt;
+	Pop_list *popList;
+	int gens, i;
 
 	/* The only point at which srand should be called */
 	srand(SRAND_SEED);
@@ -119,31 +129,88 @@ int main(int argc, char *argv[]){
 		test_minfn();
 		test_pcbmill();
 	#else
-		char *fileName = argv[inputFile];
-		InVTable invt;
-		Gene *gene;
+		/* Validate all args except files */
+		inputValidation(argc, argv);
+		gens = atoi(arg[numGen]);
 
 		/* Initialise invector table */
 		invector_init(&invt);
-		if (!buildTable(&invt, fileName)) {
-			printf("Could not open %s", fileName);
+		if (!buildTable(&invt, argv[inputFile])) {
+			printf("Could not open %s", argv[inputFile]);
 			return EXIT_FAILURE;
 		}
+
+		/* Initialise popList */
+		popList = myMalloc(sizeof(Pop_list) * gens);
+		for (i=0; i < gens; i++) {
+
+			pop_init(&&popList[i]);
+
+			/* Set popList functions */
+			if (isMinFn(argv[geneType])) {
+				pop_set_fns(popList + i, create_minfn_chrom, mutate_minfn,
+							crossover_minfn, eval_minfn);
+			}
+			pop_set_fns(popList + i, create_pcbmill_chrom, mutate_pcbmill,
+						crossover_pcbmill, eval_pcbmill);
+		}
+
 		printTable(invt);
 
-		printf("pcbmill\n");
-		gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
-		gene_print(gene);
-		printf("\n");
-
-		printf("minfn\n");
-		gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_minfn_chrom);
-		gene_print(gene);
-		printf("\n");
+		return EXIT_SUCCESS;
 	#endif
-	return EXIT_SUCCESS;
 }
 
+void inputValidation(int argc, char *argv[]) {
+	Boolean isInvalid = FALSE;
+
+	/* Check number of arguments */
+	if (argc != CMD_ARG_MAX && argc != CMD_ARG_MAX - 1)
+		myExit("Invalid number of arguments!");
+
+	/* Check geneType */
+	if (!isMinFn(argv[geneType]) &&	!isPcbMill(argv[geneType])) {
+		isInvalid = TRUE;
+		printf("Invalid geneType\n");
+	}
+
+	/* Check alleleSize */
+	if (!isPosIntNonZero(argv[alleleSize])) {
+		isInvalid = TRUE;
+		printf("Invalid alleleSize\n");
+	}
+
+	/* Check popSize */
+	if (!isPosIntNonZero(argv[popSize])) {
+		isInvalid = TRUE;
+		printf("Invalid popSize\n");
+	}
+
+	/* Check numGen */
+	if (!isPosInt(argv[numGen])) {
+		isInvalid = TRUE;
+		printf("Invalid numGen\n");
+	}
+
+	if(isInvalid)
+		exit(EXIT_FAILURE);
+}
+
+Boolean isPosIntNonZero(char *num) {
+	if (isNumber(num)) {
+		if (atoi(num) > 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+Boolean isPosInt(char *num) {
+	if (isNumber(num)) {
+		if (atoi(num) >= 0)
+			return TRUE;
+	}
+	return FALSE;
+}
 
 Boolean buildTable(InVTable *invt, char *fileName) {
 	FILE *fp;
@@ -153,11 +220,14 @@ Boolean buildTable(InVTable *invt, char *fileName) {
 
 	/* Attempt to open the file */
 	fp = fopen(fileName, "r");
-	if (fp == NULL)
+	if (fp == NULL) {
+		fclose(fp);
 		return FALSE;
+	}
 
 	/* Read file line by line*/
 	while (fgets(line, INV_LEN, fp) != NULL) {
+		/* Grab the allele token */
 		allele = strtok(line, INV_DELIM2);
 		allele = strtok(NULL, INV_DELIM2);
 		allele = strtok(allele, INV_DELIM3);
@@ -173,6 +243,10 @@ Boolean buildTable(InVTable *invt, char *fileName) {
 	return TRUE;
 }
 
+void myExit(char *errorMessage) {
+	printf(errorMessage);
+	exit(EXIT_FAILURE);
+}
 
 void printTable(InVTable invt) {
 	int i, j;
@@ -187,4 +261,32 @@ void printTable(InVTable invt) {
 		}
 		printf("\n");
 	}
+}
+
+Boolean isMinFn(char *geneType) {
+	if (strcmp(geneType, CMD_ARG_MINFN) == 0) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+Boolean isPcbMill(char *geneType) {
+	if (strcmp(geneType, CMD_ARG_PCBMILL) == 0) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+Boolean isNumber(char *num) {
+	int i = 0;
+	char currChar = num[i];
+
+	while (currChar != '\0') {
+		if (!isdigit(currChar)) {
+			return FALSE;
+		}
+		i++;
+		currChar = num[i];
+	}
+	return TRUE;
 }
