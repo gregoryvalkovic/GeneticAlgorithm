@@ -121,14 +121,14 @@ int main(int argc, char *argv[]){
 		return EXIT_SUCCESS;
 	#else
 		InVTable invt;
-		int gens, sizePop, alleles;
+		int gens, sizePop, sizeAlleles;
 		Pop_list **popListArray = NULL;
 
 		/* Validate all args except files */
 		inputValidation(argc, argv);
 		gens = atoi(argv[numGen]);
 		sizePop = atoi(argv[popSize]);
-		alleles = atoi(argv[alleleSize]);
+		sizeAlleles = atoi(argv[alleleSize]);
 
 		/* Initialise and build invector table */
 		invector_init(&invt);
