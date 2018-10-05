@@ -58,8 +58,12 @@ Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles);
 /*	Creates new Pop_nodes from the genes in the InVTable and calculates the
 	fitness for each population. Note the popList passed must be initialised
 	already with appropriate values */
-void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles);
+void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles, int popSize);
 
-/* Return the fittest node in the population (the last node) */
-Pop_node * getFittest (Pop_node *node);
+/* Frees the gene, then the node */
+void pop_nodeFree(Pop_node *node);
+
+/* Free a popList */
+void pop_free(Pop_list *popList);
+
 #endif

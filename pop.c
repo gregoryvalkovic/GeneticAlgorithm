@@ -6,7 +6,17 @@
 
 #include "pop.h"
 
-/* Function Prototype */
+/*****************************************************************************/
+						/* Function Prototype */
+
+/* Return the sum of all fitness scores in a population */
+double calcTotalFitness(Pop_list *popList);
+
+/* Return the fittest node in the population (the last node) */
+Pop_node * getFittest (Pop_node *head);
+
+/*****************************************************************************/
+						/* Provided Functions */
 
 Boolean pop_init(Pop_list **pop){
 	Pop_list *newPop = myMalloc(sizeof(Pop_list));
@@ -28,31 +38,39 @@ void pop_print_fittest(Pop_list *p){
 	gene_print(topNode->gene);
 }
 
-/************************************************************************/
+/*****************************************************************************/
 							/* My functions */
 
 void pop_normalise(Pop_list *popList) {
 	Pop_node *currPop = popList->head;
-	double fitSum = 0;
+	double totalFitness = calcTotalFitness(popList);
 
-	/* Sum the entire population's fitness */
-	while (currPop != NULL) {
-		fitSum += currPop->gene->fitness;
-		currPop = currPop->next;
-	}
 	/* Divide each pop's fitness with the sum */
-	currPop = popList->head;
 	while (currPop != NULL) {
-		gene_normalise_fitness(currPop->gene, fitSum);
+		gene_normalise_fitness(currPop->gene, totalFitness);
+		currPop = currPop->next;
 	}
 }
 
 
-Pop_node * getFittest (Pop_node *node) {
-	while (node->next != NULL) {
-		node = node->next;
+double calcTotalFitness(Pop_list *popList) {
+	Pop_node *currNode = popList->head;
+	double totalFitness = 0.0;
+
+	while (currNode != NULL) {
+		totalFitness += currNode->gene->fitness;
+		currNode = currNode->next;
 	}
-	return node;
+	return totalFitness;
+}
+
+
+Pop_node * getFittest (Pop_node *head) {
+	Pop_node *currNode = head;
+	while (currNode->next != NULL) {
+		currNode = currNode->next;
+	}
+	return currNode;
 }
 
 
@@ -98,15 +116,36 @@ Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles) {
 }
 
 
-void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles) {
+void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles,
+				  int popSize) {
 	Pop_node *newNode;
 	int i;
 
-	/* Iterate through all invectors */
-	for (i=0; i < invt->tot; i++) {
+	/* Populate with appropriate number of new nodes */
+	for (i=0; i < popSize; i++) {
 		/* Initialise, calculate fitness and insert the new node */
 		newNode = pop_nodeInit(popList, numAlleles);
 		gene_calc_fitness(newNode->gene, popList->evaluate_fn, invt);
 		pop_insert(popList, newNode);
 	}
+}
+
+
+void pop_free(Pop_list *popList) {
+	Pop_node *currNode = popList->head;
+	Pop_node *prevNode = NULL;
+
+	/* Free each node one by one */
+	while (currNode != NULL) {
+		prevNode = currNode;
+		currNode = currNode->next;
+		pop_nodeFree(prevNode);
+	}
+	free(popList);
+}
+
+
+void pop_nodeFree(Pop_node *node) {
+	gene_free(node->gene);
+	free(node);
 }

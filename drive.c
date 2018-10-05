@@ -140,11 +140,12 @@ int main(int argc, char *argv[]){
 		/* Initialise the pop list */
 		initPopListArray(popListArray, argv[geneType], gens);
 
-		/* Create initial population from the invector */
-		
+		/* Create initial population*/
+		pop_populate(*popListArray, &invt, sizeAlleles, sizePop);
 
 		invector_printTable(invt);
 
+		pop_print_fittest(*popListArray);
 		return EXIT_SUCCESS;
 	#endif
 }
