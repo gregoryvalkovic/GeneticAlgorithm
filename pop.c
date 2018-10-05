@@ -7,7 +7,6 @@
 #include "pop.h"
 
 /* Function Prototype */
-Pop_node * findTopNode(Pop_node *node);
 
 Boolean pop_init(Pop_list **pop){
 	Pop_list *newPop = myMalloc(sizeof(Pop_list));
@@ -25,25 +24,12 @@ void pop_set_fns(Pop_list *p,CreateFn cf,MutateFn mf,CrossOverFn cof,EvalFn ef){
 }
 
 void pop_print_fittest(Pop_list *p){
-	Pop_node *topNode = findTopNode(p->head);
+	Pop_node *topNode = getFittest(p->head);
 	gene_print(topNode->gene);
 }
 
 /************************************************************************/
 							/* My functions */
-
-Pop_node * findTopNode(Pop_node *node) {
-	Pop_node *topNode = node;
-
-	while (node != NULL) {
-		if (node->gene->fitness > topNode->gene->fitness) {
-			topNode = node;
-		}
-		node = node->next;
-	}
-	return topNode;
-}
-
 
 void pop_normalise(Pop_list *popList) {
 	Pop_node *currPop = popList->head;
@@ -54,12 +40,19 @@ void pop_normalise(Pop_list *popList) {
 		fitSum += currPop->gene->fitness;
 		currPop = currPop->next;
 	}
-
 	/* Divide each pop's fitness with the sum */
 	currPop = popList->head;
 	while (currPop != NULL) {
 		gene_normalise_fitness(currPop->gene, fitSum);
 	}
+}
+
+
+Pop_node * getFittest (Pop_node *node) {
+	while (node->next != NULL) {
+		node = node->next;
+	}
+	return node;
 }
 
 
