@@ -140,8 +140,8 @@ int main(int argc, char *argv[]){
 		/* Initialise the pop list */
 		initPopListArray(popListArray, argv[geneType], gens);
 
-		/* Create a population from the invector */
-
+		/* Create initial population from the invector */
+		
 
 		invector_printTable(invt);
 
@@ -200,9 +200,10 @@ void initPopListArray(Pop_list *popListArray[], char *geneType, int gens) {
 		if (isMinFn(geneType)) {
 			pop_set_fns(currPopList, create_minfn_chrom, mutate_minfn,
 						crossover_minfn, eval_minfn);
+		}else {
+			pop_set_fns(currPopList, create_pcbmill_chrom, mutate_pcbmill,
+				crossover_pcbmill, eval_pcbmill);
 		}
-		pop_set_fns(currPopList, create_pcbmill_chrom, mutate_pcbmill,
-					crossover_pcbmill, eval_pcbmill);
 	}
 }
 

@@ -154,7 +154,6 @@ Gene * crossover_minfn(Gene *g1, Gene *g2){
 
 
 double eval_pcbmill(InVTable *invt, Gene *gene){
-	/* TEST */
 	int i, *currPos, *nextPos;
 	double raw = 0.0;
 
@@ -174,7 +173,6 @@ double eval_pcbmill(InVTable *invt, Gene *gene){
 
 
 double eval_minfn(InVTable *invt, Gene *gene){
-	/* TEST */
 	int i;
 	double raw = 0.0;
 

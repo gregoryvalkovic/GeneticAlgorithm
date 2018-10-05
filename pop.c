@@ -89,9 +89,24 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 }
 
 
-Pop_node * pop_nodeInit(int alleles) {
+Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles) {
 	Pop_node *node = myMalloc(sizeof(Pop_node)) ;
-	node->gene = gene_init(alleles);
+	node->gene = gene_init(numAlleles);
+	node->gene->chromosome = popList->create_rand_chrom(numAlleles);
 	node->next = NULL;
 	return node;
+}
+
+
+void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles) {
+	Pop_node *newNode;
+	int i;
+
+	/* Iterate through all invectors */
+	for (i=0; i < invt->tot; i++) {
+		/* Initialise, calculate fitness and insert the new node */
+		newNode = pop_nodeInit(popList, numAlleles);
+		gene_calc_fitness(newNode->gene, popList->evaluate_fn, invt);
+		pop_insert(popList, newNode);
+	}
 }
