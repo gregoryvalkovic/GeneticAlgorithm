@@ -10,7 +10,7 @@
 #include "gene.h"
 
 /* Function Prototypes */
-void initPopList(Pop_list *popList[], char *geneType, int gens);
+void initPopListArray(Pop_list *popList[], char *geneType, int gens);
 
 void test_pcbmill(void){
 	/* TO DO */
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
 	#else
 		InVTable invt;
 		int gens, sizePop, alleles;
-		Pop_list **popList = NULL;
+		Pop_list **popListArray = NULL;
 
 		/* Validate all args except files */
 		inputValidation(argc, argv);
@@ -138,12 +138,12 @@ int main(int argc, char *argv[]){
 		}
 
 		/* Initialise the pop list */
-		pop_initList(popList, argv[geneType], gens);
+		initPopListArray(popListArray, argv[geneType], gens);
 
 		/* Create a population from the invector */
 
 
-		printTable(invt);
+		invector_printTable(invt);
 
 		return EXIT_SUCCESS;
 	#endif
@@ -185,23 +185,23 @@ void inputValidation(int argc, char *argv[]) {
 }
 
 
-void initPopList(Pop_list *popList[], char *geneType, int gens) {
-	Pop_list *currPop;
+void initPopListArray(Pop_list *popListArray[], char *geneType, int gens) {
+	Pop_list *currPopList;
 	int i;
 
 	/* Initialise popList */
-	popList = myMalloc(sizeof(Pop_list *) * gens);
+	popListArray = myMalloc(sizeof(Pop_list *) * gens);
 
 	for (i=0; i < gens; i++) {
-		currPop = popList[i];
-		pop_init(&currPop);
+		currPopList = popListArray[i];
+		pop_init(&currPopList);
 
 		/* Set pop functions */
 		if (isMinFn(geneType)) {
-			pop_set_fns(currPop + i, create_minfn_chrom, mutate_minfn,
+			pop_set_fns(currPopList, create_minfn_chrom, mutate_minfn,
 						crossover_minfn, eval_minfn);
 		}
-		pop_set_fns(currPop + i, create_pcbmill_chrom, mutate_pcbmill,
+		pop_set_fns(currPopList, create_pcbmill_chrom, mutate_pcbmill,
 					crossover_pcbmill, eval_pcbmill);
 	}
 }
