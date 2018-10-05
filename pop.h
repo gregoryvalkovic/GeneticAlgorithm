@@ -38,7 +38,7 @@ Boolean pop_init(Pop_list **);
 /* Set the function pointers of a population list */
 void pop_set_fns(Pop_list *p,CreateFn cf,MutateFn mf,CrossOverFn cof,EvalFn ef);
 
-/* This function causes details of the fittest gene of the generation to 
+/* This function causes details of the fittest gene of the generation to
  * be printed out.
  * The function also prints out the number of the current generation.
  * This function must not be able to access any generation value outside
@@ -46,4 +46,6 @@ void pop_set_fns(Pop_list *p,CreateFn cf,MutateFn mf,CrossOverFn cof,EvalFn ef);
 void pop_print_fittest(Pop_list *p);
 
 /* TO DO - other functions as appropriate */
+/* Initialises the poplist and all pops. Also sets fns for all pops */
+void pop_initList(Pop_list *popList[], char *geneType, int gens);
 #endif

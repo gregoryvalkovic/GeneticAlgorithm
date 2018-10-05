@@ -10,15 +10,12 @@
 #include "gene.h"
 
 /* Function prototypes */
-void printTable(InVTable invt);
-Boolean buildTable(InVTable *invt, char *fileName);
 void inputValidation(int argc, char *argv[]);
 Boolean isMinFn(char *geneType);
 Boolean isPcbMill(char *geneType);
-Boolean isPosIntNonZero(char *num);
-Boolean isPosInt(char *num);
-void myExit(char *errorMessage);
-Boolean isNumber(char *num);
+
+
+void initPopList(Pop_list *popList[], char *geneType, int gens);
 
 void test_pcbmill(void){
 	/* TO DO */
@@ -119,8 +116,8 @@ void test_minfn(void){
 
 int main(int argc, char *argv[]){
 	InVTable invt;
-	Pop_list *popList;
-	int gens, i;
+	int gens, sizePop, alleles;
+	Pop_list **popList = NULL;
 
 	/* The only point at which srand should be called */
 	srand(SRAND_SEED);
@@ -131,29 +128,22 @@ int main(int argc, char *argv[]){
 	#else
 		/* Validate all args except files */
 		inputValidation(argc, argv);
-		gens = atoi(arg[numGen]);
+		gens = atoi(argv[numGen]);
+		sizePop = atoi(argv[popSize]);
+		alleles = atoi(argv[alleleSize]);
 
-		/* Initialise invector table */
+		/* Initialise and build invector table */
 		invector_init(&invt);
-		if (!buildTable(&invt, argv[inputFile])) {
+		if (!invector_buildTable(&invt, argv[inputFile])) {
 			printf("Could not open %s", argv[inputFile]);
 			return EXIT_FAILURE;
 		}
 
-		/* Initialise popList */
-		popList = myMalloc(sizeof(Pop_list) * gens);
-		for (i=0; i < gens; i++) {
+		/* Initialise the pop list */
+		pop_initList(popList, argv[geneType], gens);
 
-			pop_init(&&popList[i]);
+		/* Create a population from the invector */
 
-			/* Set popList functions */
-			if (isMinFn(argv[geneType])) {
-				pop_set_fns(popList + i, create_minfn_chrom, mutate_minfn,
-							crossover_minfn, eval_minfn);
-			}
-			pop_set_fns(popList + i, create_pcbmill_chrom, mutate_pcbmill,
-						crossover_pcbmill, eval_pcbmill);
-		}
 
 		printTable(invt);
 
@@ -196,73 +186,6 @@ void inputValidation(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 }
 
-Boolean isPosIntNonZero(char *num) {
-	if (isNumber(num)) {
-		if (atoi(num) > 0)
-			return TRUE;
-	}
-	return FALSE;
-}
-
-Boolean isPosInt(char *num) {
-	if (isNumber(num)) {
-		if (atoi(num) >= 0)
-			return TRUE;
-	}
-	return FALSE;
-}
-
-Boolean buildTable(InVTable *invt, char *fileName) {
-	FILE *fp;
-	char line[INV_LEN];
-	char *allele;
-	int i;
-
-	/* Attempt to open the file */
-	fp = fopen(fileName, "r");
-	if (fp == NULL) {
-		fclose(fp);
-		return FALSE;
-	}
-
-	/* Read file line by line*/
-	while (fgets(line, INV_LEN, fp) != NULL) {
-		/* Grab the allele token */
-		allele = strtok(line, INV_DELIM2);
-		allele = strtok(NULL, INV_DELIM2);
-		allele = strtok(allele, INV_DELIM3);
-
-		/* Build table */
-		for (i=0; i < invt->width; i++) {
-			invt->table[invt->tot][i] = atoi(allele);
-			allele = strtok(NULL, INV_DELIM3);
-		}
-		invt->tot++;
-	}
-	fclose(fp);
-	return TRUE;
-}
-
-void myExit(char *errorMessage) {
-	printf(errorMessage);
-	exit(EXIT_FAILURE);
-}
-
-void printTable(InVTable invt) {
-	int i, j;
-
-	/* Loop through all rows */
-	for (i=0; i < invt.tot; i++) {
-		printf("%d: ", i);
-
-		/* Loop through each allele */
-		for (j=0; j < invt.width; j++) {
-			printf("%d ", invt.table[i][j]);
-		}
-		printf("\n");
-	}
-}
-
 Boolean isMinFn(char *geneType) {
 	if (strcmp(geneType, CMD_ARG_MINFN) == 0) {
 		return TRUE;
@@ -275,18 +198,4 @@ Boolean isPcbMill(char *geneType) {
 		return TRUE;
 	}
 	return FALSE;
-}
-
-Boolean isNumber(char *num) {
-	int i = 0;
-	char currChar = num[i];
-
-	while (currChar != '\0') {
-		if (!isdigit(currChar)) {
-			return FALSE;
-		}
-		i++;
-		currChar = num[i];
-	}
-	return TRUE;
 }
