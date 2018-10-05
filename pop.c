@@ -72,19 +72,27 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 		return;
 	}
 
+	/* Iterate through the popList */
 	while (currNode != NULL) {
+
 		/* Insert node */
-		if (currNode->gene->fitness > insertNode->gene->fitness) {
-			prevNode->next = insertNode;
+		if (currNode->gene->fitness >= insertNode->gene->fitness) {
 			insertNode->next = currNode;
+
+			/* For inserting before the head */
+			if (currNode == popList->head) {
+				popList->head = insertNode;
+			}else {
+				prevNode->next = insertNode;
+			}
 			return;
 		}
-
+		/* Onto the next node */
 		prevNode = currNode;
 		currNode = currNode->next;
 	}
+	/* Insert at the end of list if reached */
 	prevNode->next = insertNode;
-	insertNode->next = NULL;
 }
 
 
@@ -92,4 +100,5 @@ Pop_node * pop_nodeInit(int alleles) {
 	Pop_node *node = myMalloc(sizeof(Pop_node)) ;
 	node->gene = gene_init(alleles);
 	node->next = NULL;
+	return node;
 }
