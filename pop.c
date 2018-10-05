@@ -64,4 +64,23 @@ void pop_initList(Pop_list *popList[], char *geneType, int gens) {
 	}
 }
 
+
+void pop_normalise(Pop_list *popList) {
+	Pop_node currPop = popList->head;
+	double fitSum = 0;
+
+	/* Sum the entire population's fitness */
+	while (currPop != NULL) {
+		fitSum += currPop->gene->fitness;
+		currPop = currPop->next;
+	}
+
+	/* Divide each pop's fitness with the sum */
+	currPop = popList->head;
+	while (currPop != NULL) {
+		currPop->gene->fitness = currPop->gene->fitness / fitSum;
+		currPop = currPop->next;
+	}
+}
+
 /* TO DO - other functions as appropriate */

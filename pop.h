@@ -48,4 +48,7 @@ void pop_print_fittest(Pop_list *p);
 /* TO DO - other functions as appropriate */
 /* Initialises the poplist and all pops. Also sets fns for all pops */
 void pop_initList(Pop_list *popList[], char *geneType, int gens);
+
+/* Normalises a population's fitness score */
+void pop_normalise(Pop_list *popList);
 #endif
