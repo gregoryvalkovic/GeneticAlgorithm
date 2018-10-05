@@ -29,6 +29,8 @@ void pop_print_fittest(Pop_list *p){
 	gene_print(topNode->gene);
 }
 
+/************************************************************************/
+							/* My functions */
 
 Pop_node * findTopNode(Pop_node *node) {
 	Pop_node *topNode = node;
@@ -79,17 +81,15 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 		}
 
 		prevNode = currNode;
-		currNode = popList->next;
+		currNode = currNode->next;
 	}
 	prevNode->next = insertNode;
 	insertNode->next = NULL;
 }
 
 
-void pop_nodeInit(Pop_node *node) {
-	node->gene = myMalloc(sizeof(Gene));
+Pop_node * pop_nodeInit(int alleles) {
+	Pop_node *node = myMalloc(sizeof(Pop_node)) ;
+	node->gene = gene_init(alleles);
 	node->next = NULL;
 }
-
-
-/* TO DO - other functions as appropriate */
