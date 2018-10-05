@@ -51,4 +51,7 @@ void pop_initList(Pop_list *popList[], char *geneType, int gens);
 
 /* Normalises a population's fitness score */
 void pop_normalise(Pop_list *popList);
+
+/* Initialise a new Pop_node */
+Pop_node * pop_nodeInit(int alleles);
 #endif
