@@ -60,4 +60,36 @@ void pop_normalise(Pop_list *popList) {
 	}
 }
 
+
+void pop_insert(Pop_list *popList, Pop_node *insertNode) {
+	Pop_node *prevNode = NULL, *currNode = popList->head;
+
+	/* If popList is empty insert at head */
+	if (popList->head == NULL) {
+		popList->head = currNode;
+		return;
+	}
+
+	while (currNode != NULL) {
+		/* Insert node */
+		if (currNode->gene->fitness > insertNode->gene->fitness) {
+			prevNode->next = insertNode;
+			insertNode->next = currNode;
+			return;
+		}
+
+		prevNode = currNode;
+		currNode = popList->next;
+	}
+	prevNode->next = insertNode;
+	insertNode->next = NULL;
+}
+
+
+void pop_nodeInit(Pop_node *node) {
+	node->gene = myMalloc(sizeof(Gene));
+	node->next = NULL;
+}
+
+
 /* TO DO - other functions as appropriate */
