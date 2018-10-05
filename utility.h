@@ -31,4 +31,5 @@ Boolean isPosInt(char *num);
 
 /* Checks that a string contains only digits */
 Boolean isNumber(char *num);
+
 #endif

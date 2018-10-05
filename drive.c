@@ -9,12 +9,7 @@
 #include "pop.h"
 #include "gene.h"
 
-/* Function prototypes */
-void inputValidation(int argc, char *argv[]);
-Boolean isMinFn(char *geneType);
-Boolean isPcbMill(char *geneType);
-
-
+/* Function Prototypes */
 void initPopList(Pop_list *popList[], char *geneType, int gens);
 
 void test_pcbmill(void){
@@ -115,9 +110,7 @@ void test_minfn(void){
 }
 
 int main(int argc, char *argv[]){
-	InVTable invt;
-	int gens, sizePop, alleles;
-	Pop_list **popList = NULL;
+
 
 	/* The only point at which srand should be called */
 	srand(SRAND_SEED);
@@ -125,7 +118,12 @@ int main(int argc, char *argv[]){
 	#ifdef DEBUG
 		test_minfn();
 		test_pcbmill();
+		return EXIT_SUCCESS;
 	#else
+		InVTable invt;
+		int gens, sizePop, alleles;
+		Pop_list **popList = NULL;
+
 		/* Validate all args except files */
 		inputValidation(argc, argv);
 		gens = atoi(argv[numGen]);
@@ -185,6 +183,29 @@ void inputValidation(int argc, char *argv[]) {
 	if(isInvalid)
 		exit(EXIT_FAILURE);
 }
+
+
+void initPopList(Pop_list *popList[], char *geneType, int gens) {
+	Pop_list *currPop;
+	int i;
+
+	/* Initialise popList */
+	popList = myMalloc(sizeof(Pop_list *) * gens);
+
+	for (i=0; i < gens; i++) {
+		currPop = popList[i];
+		pop_init(&currPop);
+
+		/* Set pop functions */
+		if (isMinFn(geneType)) {
+			pop_set_fns(currPop + i, create_minfn_chrom, mutate_minfn,
+						crossover_minfn, eval_minfn);
+		}
+		pop_set_fns(currPop + i, create_pcbmill_chrom, mutate_pcbmill,
+					crossover_pcbmill, eval_pcbmill);
+	}
+}
+
 
 Boolean isMinFn(char *geneType) {
 	if (strcmp(geneType, CMD_ARG_MINFN) == 0) {
