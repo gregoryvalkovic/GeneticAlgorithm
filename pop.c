@@ -79,7 +79,8 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 
 	/* If popList is empty insert at head */
 	if (popList->head == NULL) {
-		popList->head = currNode;
+		popList->head = insertNode;
+		popList->count++;
 		return;
 	}
 
@@ -96,6 +97,7 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 			}else {
 				prevNode->next = insertNode;
 			}
+			popList->count++;
 			return;
 		}
 		/* Onto the next node */
@@ -104,6 +106,7 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 	}
 	/* Insert at the end of list if reached */
 	prevNode->next = insertNode;
+	popList->count++;
 }
 
 
