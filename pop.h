@@ -63,7 +63,7 @@ void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles, int popSize
 /* Frees the gene, then the node */
 void pop_nodeFree(Pop_node *node);
 
-/* Free a popList */
+/* Free an entire popList */
 void pop_free(Pop_list *popList);
 
 #endif

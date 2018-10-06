@@ -10,7 +10,7 @@
 #include "gene.h"
 
 /* Function Prototypes */
-void initPopListArray(Pop_list *popList[], char *geneType, int gens);
+void initPopList(Pop_list **popList, char *geneType, int gens);
 
 void test_pcbmill(void){
 	/* TO DO */
@@ -121,14 +121,16 @@ int main(int argc, char *argv[]){
 		return EXIT_SUCCESS;
 	#else
 		InVTable invt;
-		int gens, sizePop, sizeAlleles;
-		Pop_list **popListArray = NULL;
+		int gens, sizePop, sizeAlleles i;
+		Pop_list *popList = NULL;
+
 
 		/* Validate all args except files */
 		inputValidation(argc, argv);
 		gens = atoi(argv[numGen]);
 		sizePop = atoi(argv[popSize]);
 		sizeAlleles = atoi(argv[alleleSize]);
+
 
 		/* Initialise and build invector table */
 		invector_init(&invt);
@@ -137,15 +139,23 @@ int main(int argc, char *argv[]){
 			return EXIT_FAILURE;
 		}
 
-		/* Initialise the pop list */
-		initPopListArray(popListArray, argv[geneType], gens);
+		/* TODO: Loop to do the following for each generation */
+		for (i=0; i < gens; i++) {
+
+		}
+
+		/* Initial popList initialisation */
+		initPopList(&popList, argv[geneType], gens);
+
 
 		/* Create initial population*/
-		pop_populate(*popListArray, &invt, sizeAlleles, sizePop);
+		pop_populate(popList, &invt, sizeAlleles, sizePop);
 
 		invector_printTable(invt);
 
-		pop_print_fittest(*popListArray);
+		pop_print_fittest(popList);
+
+		pop_free(popList);
 		return EXIT_SUCCESS;
 	#endif
 }
@@ -186,25 +196,17 @@ void inputValidation(int argc, char *argv[]) {
 }
 
 
-void initPopListArray(Pop_list *popListArray[], char *geneType, int gens) {
-	Pop_list *currPopList;
-	int i;
-
+void initPopList(Pop_list **popList, char *geneType, int gens) {
 	/* Initialise popList */
-	popListArray = myMalloc(sizeof(Pop_list *) * gens);
+	pop_init(popList);
 
-	for (i=0; i < gens; i++) {
-		currPopList = popListArray[i];
-		pop_init(&currPopList);
-
-		/* Set pop functions */
-		if (isMinFn(geneType)) {
-			pop_set_fns(currPopList, create_minfn_chrom, mutate_minfn,
-						crossover_minfn, eval_minfn);
-		}else {
-			pop_set_fns(currPopList, create_pcbmill_chrom, mutate_pcbmill,
-				crossover_pcbmill, eval_pcbmill);
-		}
+	/* Set pop functions */
+	if (isMinFn(geneType)) {
+		pop_set_fns(*popList, &create_minfn_chrom, &mutate_minfn,
+					&crossover_minfn, &eval_minfn);
+	}else {
+		pop_set_fns(*popList, &create_pcbmill_chrom, &mutate_pcbmill,
+			&crossover_pcbmill, &eval_pcbmill);
 	}
 }
 
