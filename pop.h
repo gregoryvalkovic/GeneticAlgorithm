@@ -38,7 +38,7 @@ Boolean pop_init(Pop_list **);
 /* Set the function pointers of a population list */
 void pop_set_fns(Pop_list *p,CreateFn cf,MutateFn mf,CrossOverFn cof,EvalFn ef);
 
-/* This function causes details of the fittest gene of the generation to 
+/* This function causes details of the fittest gene of the generation to
  * be printed out.
  * The function also prints out the number of the current generation.
  * This function must not be able to access any generation value outside
@@ -46,4 +46,24 @@ void pop_set_fns(Pop_list *p,CreateFn cf,MutateFn mf,CrossOverFn cof,EvalFn ef);
 void pop_print_fittest(Pop_list *p);
 
 /* TO DO - other functions as appropriate */
+/* Initialises the poplist and all pops. Also sets fns for all pops */
+void pop_initList(Pop_list *popList[], char *geneType, int gens);
+
+/* Normalises a population's fitness score */
+void pop_normalise(Pop_list *popList);
+
+/* Initialise a new Pop_node */
+Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles);
+
+/*	Creates new Pop_nodes from the genes in the InVTable and calculates the
+	fitness for each population. Note the popList passed must be initialised
+	already with appropriate values */
+void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles, int popSize);
+
+/* Frees the gene, then the node */
+void pop_nodeFree(Pop_node *node);
+
+/* Free an entire popList */
+void pop_free(Pop_list *popList);
+
 #endif

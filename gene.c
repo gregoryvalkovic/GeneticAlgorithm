@@ -154,7 +154,6 @@ Gene * crossover_minfn(Gene *g1, Gene *g2){
 
 
 double eval_pcbmill(InVTable *invt, Gene *gene){
-	/* TEST */
 	int i, *currPos, *nextPos;
 	double raw = 0.0;
 
@@ -174,7 +173,6 @@ double eval_pcbmill(InVTable *invt, Gene *gene){
 
 
 double eval_minfn(InVTable *invt, Gene *gene){
-	/* TEST */
 	int i;
 	double raw = 0.0;
 
@@ -200,12 +198,13 @@ Gene * gene_create_rand_gene(int numAlleles, CreateFn create_chrom){
 
 
 void gene_calc_fitness(Gene *gene, EvalFn evaluate_fn, InVTable *invTab){
-	/* TO DO */
+	gene->raw_score = evaluate_fn(invTab, gene);
+	gene->fitness = 1 / (gene->raw_score + 1.0);
 }
 
 
 void gene_normalise_fitness(Gene *gene, double total_fitness){
-	/* TO DO */
+	gene->fitness = gene->fitness / total_fitness;
 }
 
 
@@ -234,7 +233,7 @@ void gene_print(Gene *gene) {
 			printf(" ");
 		}
 	}
-	printf("fit: %f raw:  %f\n", gene->fitness, gene->raw_score);
+	printf("fit: %.3f raw:  %.3f\n", gene->fitness, gene->raw_score);
 }
 
 

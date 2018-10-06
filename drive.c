@@ -9,9 +9,8 @@
 #include "pop.h"
 #include "gene.h"
 
-/* Function prototypes */
-void printTable(InVTable invt);
-Boolean buildTable(InVTable *invt, char *fileName);
+/* Function Prototypes */
+void initPopList(Pop_list **popList, char *geneType, int gens);
 
 void test_pcbmill(void){
 	/* TO DO */
@@ -112,79 +111,116 @@ void test_minfn(void){
 
 int main(int argc, char *argv[]){
 
+
 	/* The only point at which srand should be called */
 	srand(SRAND_SEED);
 
 	#ifdef DEBUG
 		test_minfn();
 		test_pcbmill();
+		return EXIT_SUCCESS;
 	#else
-		char *fileName = argv[inputFile];
 		InVTable invt;
-		Gene *gene;
+		int gens, sizePop, sizeAlleles i;
+		Pop_list *popList = NULL;
 
-		/* Initialise invector table */
+
+		/* Validate all args except files */
+		inputValidation(argc, argv);
+		gens = atoi(argv[numGen]);
+		sizePop = atoi(argv[popSize]);
+		sizeAlleles = atoi(argv[alleleSize]);
+
+
+		/* Initialise and build invector table */
 		invector_init(&invt);
-		if (!buildTable(&invt, fileName)) {
-			printf("Could not open %s", fileName);
+		if (!invector_buildTable(&invt, argv[inputFile])) {
+			printf("Could not open %s", argv[inputFile]);
 			return EXIT_FAILURE;
 		}
-		printTable(invt);
 
-		printf("pcbmill\n");
-		gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_pcbmill_chrom);
-		gene_print(gene);
-		printf("\n");
+		/* TODO: Loop to do the following for each generation */
+		for (i=0; i < gens; i++) {
 
-		printf("minfn\n");
-		gene = gene_create_rand_gene(TEST_ALLELE_LEN, &create_minfn_chrom);
-		gene_print(gene);
-		printf("\n");
+		}
+
+		/* Initial popList initialisation */
+		initPopList(&popList, argv[geneType], gens);
+
+
+		/* Create initial population*/
+		pop_populate(popList, &invt, sizeAlleles, sizePop);
+
+		invector_printTable(invt);
+
+		pop_print_fittest(popList);
+
+		pop_free(popList);
+		return EXIT_SUCCESS;
 	#endif
-	return EXIT_SUCCESS;
+}
+
+void inputValidation(int argc, char *argv[]) {
+	Boolean isInvalid = FALSE;
+
+	/* Check number of arguments */
+	if (argc != CMD_ARG_MAX && argc != CMD_ARG_MAX - 1)
+		myExit("Invalid number of arguments!");
+
+	/* Check geneType */
+	if (!isMinFn(argv[geneType]) &&	!isPcbMill(argv[geneType])) {
+		isInvalid = TRUE;
+		printf("Invalid geneType\n");
+	}
+
+	/* Check alleleSize */
+	if (!isPosIntNonZero(argv[alleleSize])) {
+		isInvalid = TRUE;
+		printf("Invalid alleleSize\n");
+	}
+
+	/* Check popSize */
+	if (!isPosIntNonZero(argv[popSize])) {
+		isInvalid = TRUE;
+		printf("Invalid popSize\n");
+	}
+
+	/* Check numGen */
+	if (!isPosInt(argv[numGen])) {
+		isInvalid = TRUE;
+		printf("Invalid numGen\n");
+	}
+
+	if(isInvalid)
+		exit(EXIT_FAILURE);
 }
 
 
-Boolean buildTable(InVTable *invt, char *fileName) {
-	FILE *fp;
-	char line[INV_LEN];
-	char *allele;
-	int i;
+void initPopList(Pop_list **popList, char *geneType, int gens) {
+	/* Initialise popList */
+	pop_init(popList);
 
-	/* Attempt to open the file */
-	fp = fopen(fileName, "r");
-	if (fp == NULL)
-		return FALSE;
-
-	/* Read file line by line*/
-	while (fgets(line, INV_LEN, fp) != NULL) {
-		allele = strtok(line, INV_DELIM2);
-		allele = strtok(NULL, INV_DELIM2);
-		allele = strtok(allele, INV_DELIM3);
-
-		/* Build table */
-		for (i=0; i < invt->width; i++) {
-			invt->table[invt->tot][i] = atoi(allele);
-			allele = strtok(NULL, INV_DELIM3);
-		}
-		invt->tot++;
+	/* Set pop functions */
+	if (isMinFn(geneType)) {
+		pop_set_fns(*popList, &create_minfn_chrom, &mutate_minfn,
+					&crossover_minfn, &eval_minfn);
+	}else {
+		pop_set_fns(*popList, &create_pcbmill_chrom, &mutate_pcbmill,
+			&crossover_pcbmill, &eval_pcbmill);
 	}
-	fclose(fp);
-	return TRUE;
 }
 
 
-void printTable(InVTable invt) {
-	int i, j;
-
-	/* Loop through all rows */
-	for (i=0; i < invt.tot; i++) {
-		printf("%d: ", i);
-
-		/* Loop through each allele */
-		for (j=0; j < invt.width; j++) {
-			printf("%d ", invt.table[i][j]);
-		}
-		printf("\n");
+Boolean isMinFn(char *geneType) {
+	if (strcmp(geneType, CMD_ARG_MINFN) == 0) {
+		return TRUE;
 	}
+	return FALSE;
+}
+
+Boolean isPcbMill(char *geneType) {
+	if (strcmp(geneType, CMD_ARG_PCBMILL) == 0) {
+		return TRUE;
+	}
+	return FALSE;
 }
