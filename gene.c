@@ -8,7 +8,7 @@
 
 int * create_pcbmill_chrom(int numAlleles){
 	int *chrom, i, index;
-	chrom = calloc(numAlleles, sizeof(int));
+	chrom = myCalloc(numAlleles, sizeof(int));
 
 	/* Loop through possible values excluding zero */
 	for (i=1; i < numAlleles; i++) {
@@ -236,6 +236,8 @@ void gene_print(Gene *gene) {
 	printf("fit: %.3f raw:  %.3f\n", gene->fitness, gene->raw_score);
 }
 
+/*****************************************************************************/
+							/* My Functions */
 
 void gene_copy(Gene *g1, Gene *g2) {
 	int i;
@@ -252,7 +254,7 @@ void gene_copy(Gene *g1, Gene *g2) {
 
 Gene * gene_init(int numAlleles) {
 	Gene *gene = myMalloc(sizeof(Gene));
-	gene->chromosome = myCalloc(numAlleles, sizeof(int));
+	gene->chromosome = NULL;
 	gene->num_alleles = numAlleles;
 	gene->raw_score = 0.0;
 	gene->fitness = 0.0;

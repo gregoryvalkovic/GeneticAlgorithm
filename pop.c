@@ -111,7 +111,8 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 
 
 Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles) {
-	Pop_node *node = myMalloc(sizeof(Pop_node)) ;
+	Pop_node *node = myMalloc(sizeof(Pop_node));
+	
 	node->gene = gene_init(numAlleles);
 	node->gene->chromosome = popList->create_rand_chrom(numAlleles);
 	node->next = NULL;
@@ -126,8 +127,10 @@ void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles,
 
 	/* Populate with appropriate number of new nodes */
 	for (i=0; i < popSize; i++) {
-		/* Initialise, calculate fitness and insert the new node */
+		/* Initialise new node and create the random chromosome */
 		newNode = pop_nodeInit(popList, numAlleles);
+		popList->create_rand_chrom(newNode->gene->chromosome, numAlleles);
+
 		gene_calc_fitness(newNode->gene, popList->evaluate_fn, invt);
 		pop_insert(popList, newNode);
 	}

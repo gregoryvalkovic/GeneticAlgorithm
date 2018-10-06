@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
 	#else
 		InVTable invt;
 		int gens, sizePop, sizeAlleles i;
-		Pop_list *popList = NULL;
+		Pop_list *popList = NULL, *newPopList;
 
 
 		/* Validate all args except files */
@@ -140,20 +140,19 @@ int main(int argc, char *argv[]){
 		}
 
 		/* TODO: Loop to do the following for each generation */
-		for (i=0; i < gens; i++) {
-
-		}
 
 		/* Initial popList initialisation */
 		initPopList(&popList, argv[geneType], gens);
 
-
 		/* Create initial population*/
 		pop_populate(popList, &invt, sizeAlleles, sizePop);
 
-		invector_printTable(invt);
-
 		pop_print_fittest(popList);
+
+		/* Normalise the fitness, getting ready to crossover */
+		pop_normalise(popList);
+
+		/* Clone the  */
 
 		pop_free(popList);
 		return EXIT_SUCCESS;
