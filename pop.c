@@ -155,3 +155,14 @@ void pop_nodeFree(Pop_node *node) {
 	gene_free(node->gene);
 	free(node);
 }
+	free(node);
+}
+
+
+Pop_node pop_nodeCopy(Pop_list popList, Pop_node *node) {
+	Pop_node *nodeCopy;
+	/* WIP: Remember we changed init to set values to zero, no longer creates
+		the chromosome */
+	nodeCopy = pop_nodeInit(popList, node->gene->num_alleles);
+	
+}
