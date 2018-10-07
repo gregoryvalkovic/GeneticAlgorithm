@@ -92,7 +92,6 @@ Gene * crossover_pcbmill(Gene *g1, Gene *g2){
 
 	/* Initialise child gene */
 	Gene *child = gene_init(g1->num_alleles);
-	child->num_alleles = g1->num_alleles;
 
 	#ifdef DEBUG
 		index1 = 2;
@@ -254,7 +253,7 @@ void gene_copy(Gene *g1, Gene *g2) {
 
 Gene * gene_init(int numAlleles) {
 	Gene *gene = myMalloc(sizeof(Gene));
-	gene->chromosome = NULL;
+	gene->chromosome = myMalloc(sizeof(int) * numAlleles);
 	gene->num_alleles = numAlleles;
 	gene->raw_score = 0.0;
 	gene->fitness = 0.0;

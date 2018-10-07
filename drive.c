@@ -10,7 +10,7 @@
 #include "gene.h"
 
 /* Function Prototypes */
-void initPopList(Pop_list **popList, char *geneType, int gens);
+void initPopList(Pop_list **popList, char *geneType);
 void cloneFittest(Pop_list *popList, Pop_list *newPopList);
 
 void test_pcbmill(void){
@@ -122,8 +122,10 @@ int main(int argc, char *argv[]){
 		return EXIT_SUCCESS;
 	#else
 		InVTable invt;
-		int gens, sizePop, sizeAlleles, i;
+		int gens, sizePop, sizeAlleles, numCrossovers, i;
+		double numMutants;
 		Pop_list *popList, *newPopList;
+
 		popList = newPopList = NULL;
 
 		/* Validate all args except files */
@@ -132,6 +134,11 @@ int main(int argc, char *argv[]){
 		sizePop = atoi(argv[popSize]);
 		sizeAlleles = atoi(argv[alleleSize]);
 
+		/* 	Calc number of mutants and crossovers for populations
+			-1 to numCrossovers to account for the fittest gene
+			being cloned into the next generation */
+		numMutants = (sizePop * MUTATE_RATE) / 100;
+		numCrossovers = sizePop - numMutants - 1;
 
 		/* Initialise and build invector table */
 		invector_init(&invt);
@@ -140,30 +147,47 @@ int main(int argc, char *argv[]){
 			return EXIT_FAILURE;
 		}
 
-		/* TODO: Loop to do the following for each generation */
-
 		/* Initial popList initialisation */
-		initPopList(&popList, argv[geneType], gens);
+		initPopList(&popList, argv[geneType]);
 
 		/* Create initial population*/
-		pop_populate(popList, &invt, sizeAlleles, sizePop);
+		pop_initialPopulate(popList, &invt, sizeAlleles, sizePop);
 
-		/* Print the fittest */
-		pop_print_fittest(popList);
+		/* WIP: Loop to do the following for each generation */
+		for (i=0; i < gens; i++) {
 
-		/* Clone the fittest gene into newPopList */
-		pop_init(&newPopList);
-		cloneFittest(popList, newPopList);
-		
-		/* Normalise the fitness */
-		pop_normalise(popList);
+			/* 	Populate next generation with mutants and crossovers
+				Skip for first generation as it's already populated */
+			if (i != 0) {
+				
+				/* Initialise the newPopList */
+				initPopList(&newPopList, argv[geneType]);
 
-		/* TODO: Put one mutant into newPopList */
+				/* Clone fittest gene to new population */
+				cloneFittest(popList, newPopList);
 
-		/* TODO: Crossover parents for the rest of the population*/
-		pop_rouletteSelect(popList);
+				/* Add mutants to new population */
+				pop_addMutants(popList, newPopList, &invt, numMutants);
+
+				/* TODO: Fill rest of population with crossovers */
+
+				/* Free the previous generation */
+				pop_free(popList);
+				popList = newPopList;
+				newPopList = NULL;
+			}
+
+			/* Calculate the fitness and normalise it */
+			pop_calcfitness(popList, &invt);
+			pop_normalise(popList);
+
+			/* Print the fittest */
+			printf("Gen:%4d ", i);
+			pop_print_fittest(popList);
+		}
 		
 		pop_free(popList);
+
 		return EXIT_SUCCESS;
 	#endif
 }
@@ -204,7 +228,7 @@ void inputValidation(int argc, char *argv[]) {
 }
 
 
-void initPopList(Pop_list **popList, char *geneType, int gens) {
+void initPopList(Pop_list **popList, char *geneType) {
 	/* Initialise popList */
 	pop_init(popList);
 

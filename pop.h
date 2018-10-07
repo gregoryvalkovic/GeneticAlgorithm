@@ -58,7 +58,7 @@ Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles);
 /*	Creates new Pop_nodes from the genes in the InVTable and calculates the
 	fitness for each population. Note the popList passed must be initialised
 	already with appropriate values */
-void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles, int popSize);
+void pop_initialPopulate(Pop_list *popList, InVTable *invt, int numAlleles, int popSize);
 
 /* Frees the gene, then the node */
 void pop_nodeFree(Pop_node *node);
@@ -75,4 +75,13 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode);
 
 /* Roulette wheel selection of a node from popList */
 Pop_node * pop_rouletteSelect(Pop_list *popList);
+
+/* Sets the fitness and rawscore for every gene in a list */
+void pop_calcfitness(Pop_list *p, InVTable *invt);
+
+/* Generates mutants from the previous generation and inserts them into the new population */
+void pop_addMutants(Pop_list *pop, Pop_list *newPop, InVTable *invt, int numMutants);
+
+/* Create a mutant node of a given node */
+Pop_node * pop_mutateNode(Pop_list *popList, Pop_node *parentNode);
 #endif

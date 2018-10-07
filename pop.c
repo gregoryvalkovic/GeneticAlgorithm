@@ -101,22 +101,24 @@ Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles) {
 	Pop_node *node = myMalloc(sizeof(Pop_node));
 	
 	node->gene = gene_init(numAlleles);
+
+	/* Free the chrom that gene_init sets, replace with rand_chrom */
+	free(node->gene->chromosome);
 	node->gene->chromosome = popList->create_rand_chrom(numAlleles);
 	node->next = NULL;
 	return node;
 }
 
 
-void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles,
+void pop_initialPopulate(Pop_list *popList, InVTable *invt, int numAlleles,
 				  int popSize) {
 	Pop_node *newNode;
 	int i;
 
 	/* Populate with appropriate number of new nodes */
 	for (i=0; i < popSize; i++) {
-		/* Initialise new node and create the random chromosome */
+		/* Initialise new node  */
 		newNode = pop_nodeInit(popList, numAlleles);
-		newNode->gene->chromosome = popList->create_rand_chrom(numAlleles);
 
 		gene_calc_fitness(newNode->gene, popList->evaluate_fn, invt);
 		pop_insert(popList, newNode);
@@ -145,25 +147,22 @@ void pop_nodeFree(Pop_node *node) {
 
 
 Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node) {
-	Pop_node *copyNode;
+	Pop_node *copyNode = NULL;
 	
-	/* Initialise the new node */
+	/* 	Initialise the new node and copy the gene */
 	copyNode = pop_nodeInit(popList, node->gene->num_alleles);
-
-	/* Copy the gene */
 	gene_copy(node->gene, copyNode->gene);
-	
+
 	return copyNode;
 }
 
-/* WIP */
 Pop_node * pop_rouletteSelect(Pop_list *popList) {
 	Pop_node *currNode = popList->head;
 	double fitSum = 0.0, threshold;
 
 	assert(popList->head != NULL);
 
-	/* Random value from 1 approaching zero */
+	/* Random value from 0.1 to 1 */
 	threshold = rand() % 10 + 1 ;
 	threshold = 1 / threshold;
 
@@ -179,4 +178,48 @@ Pop_node * pop_rouletteSelect(Pop_list *popList) {
 		currNode = currNode->next; 
 	}
 	return currNode;
+}
+
+void pop_calcfitness(Pop_list *p, InVTable *invt) {
+	Pop_node *currNode = p->head;
+	
+	/* Loop through each node and calculate the fitness */
+	while (currNode != NULL) {
+		gene_calc_fitness(currNode->gene, p->evaluate_fn, invt);
+
+		/* On to the next node */
+		currNode = currNode->next;
+	}
+}
+
+
+void pop_addMutants(Pop_list *pop, Pop_list *newPop, InVTable *invt, int numMutants) {
+	Pop_node *parentNode, *mutantNode;
+	int i;
+
+	/* Loop for the number of mutants that must be created */
+	for (i=0; i < numMutants; i++) {	
+
+		/* Select a parentNode to mutate from, and mutate it */
+		parentNode = pop_rouletteSelect(pop);
+		mutantNode = pop_mutateNode(pop, parentNode);
+
+		/* Calculate the fitness and raw_score of the mutant node */
+		gene_calc_fitness(mutantNode->gene, pop->evaluate_fn, invt);
+		
+		/* Insert the node into the new population list */
+		pop_insert(newPop, mutantNode);
+	}
+}
+
+
+Pop_node * pop_mutateNode(Pop_list *popList, Pop_node *parentNode) {
+	
+	/* Initialise the mutantNode */
+	Pop_node *mutantNode = myMalloc(sizeof(Pop_node));
+	mutantNode->next = NULL;
+
+	/* Mutate the parent node */
+	mutantNode->gene = popList->mutate_gene(parentNode->gene);
+	return mutantNode;
 }
