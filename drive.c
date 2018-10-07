@@ -151,13 +151,18 @@ int main(int argc, char *argv[]){
 		/* Print the fittest */
 		pop_print_fittest(popList);
 
-		/* Normalise the fitness, getting ready to crossover */
-		pop_normalise(popList);
-
 		/* Clone the fittest gene into newPopList */
 		pop_init(&newPopList);
 		cloneFittest(popList, newPopList);
+		
+		/* Normalise the fitness */
+		pop_normalise(popList);
 
+		/* TODO: Put one mutant into newPopList */
+
+		/* TODO: Crossover parents for the rest of the population*/
+
+		
 		pop_free(popList);
 		return EXIT_SUCCESS;
 	#endif

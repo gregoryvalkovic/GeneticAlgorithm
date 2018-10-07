@@ -31,8 +31,7 @@ void pop_set_fns(Pop_list *p,CreateFn cf,MutateFn mf,CrossOverFn cof,EvalFn ef){
 }
 
 void pop_print_fittest(Pop_list *p){
-	Pop_node *topNode = pop_getFittest(p->head);
-	gene_print(topNode->gene);
+	gene_print(p->head->gene);
 }
 
 /*****************************************************************************/
@@ -62,15 +61,6 @@ double calcTotalFitness(Pop_list *popList) {
 }
 
 
-Pop_node * pop_getFittest (Pop_node *head) {
-	Pop_node *currNode = head;
-	while (currNode->next != NULL) {
-		currNode = currNode->next;
-	}
-	return currNode;
-}
-
-
 void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 	Pop_node *prevNode = NULL, *currNode = popList->head;
 
@@ -85,7 +75,7 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 	while (currNode != NULL) {
 
 		/* Insert node */
-		if (currNode->gene->fitness >= insertNode->gene->fitness) {
+		if (currNode->gene->fitness <= insertNode->gene->fitness) {
 			insertNode->next = currNode;
 
 			/* For inserting before the head */
@@ -164,4 +154,9 @@ Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node) {
 	gene_copy(node->gene, copyNode->gene);
 	
 	return copyNode;
+}
+
+/* TODO */
+Pop_node * pop_rouletteSelect(Pop_list popList) {
+
 }

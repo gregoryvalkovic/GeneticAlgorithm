@@ -70,9 +70,6 @@ void pop_free(Pop_list *popList);
 	will be null however. */
 Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node);
 
-/* Return the fittest node in the population (the last node) */
-Pop_node * pop_getFittest (Pop_node *head);
-
 /* Inserts a node, sorted by its fitness */
 void pop_insert(Pop_list *popList, Pop_node *insertNode);
 
