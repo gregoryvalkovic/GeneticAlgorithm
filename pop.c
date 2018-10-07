@@ -75,7 +75,7 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 	while (currNode != NULL) {
 
 		/* Insert node */
-		if (currNode->gene->fitness <= insertNode->gene->fitness) {
+		if (currNode->gene->raw_score >= insertNode->gene->raw_score) {
 			insertNode->next = currNode;
 
 			/* For inserting before the head */
@@ -222,4 +222,37 @@ Pop_node * pop_mutateNode(Pop_list *popList, Pop_node *parentNode) {
 	/* Mutate the parent node */
 	mutantNode->gene = popList->mutate_gene(parentNode->gene);
 	return mutantNode;
+}
+
+
+void pop_addCrossovers(Pop_list *pop, Pop_list *newPop, InVTable *invt,
+					   int numCrossovers) {
+	Pop_node *childNode, *p1, *p2;
+	int i;
+
+	/* Iterate for each child node produced */
+	for (i=0; i < numCrossovers; i++) {
+		
+		/* Select two parent nodes */
+		p1 = pop_rouletteSelect(pop);
+		p2 = pop_rouletteSelect(pop);
+
+		/* Create the child node and insert it */
+		childNode = pop_crossover(newPop, invt, p1, p2);
+		pop_insert(newPop, childNode);
+	}
+}
+
+
+Pop_node * pop_crossover(Pop_list *newPop, InVTable *invt, Pop_node *p1,
+						 Pop_node *p2) {
+	/* Initialise the child node */
+	Pop_node *child = myMalloc(sizeof(Pop_node));
+	child->next = NULL;
+
+	/* Crossover the parent genes */
+	child->gene = newPop->crossover_genes(p1->gene, p2->gene);
+	gene_calc_fitness(child->gene, newPop->evaluate_fn, invt);
+
+	return child;
 }

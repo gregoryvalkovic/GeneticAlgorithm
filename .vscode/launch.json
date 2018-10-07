@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main.exe",
-            "args": ["minfn", "4", "430", "2", "minfnin.dat"],
+            "args": ["pcbmill", "12", "20", "5", "pcbin.dat"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

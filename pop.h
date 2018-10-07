@@ -84,4 +84,10 @@ void pop_addMutants(Pop_list *pop, Pop_list *newPop, InVTable *invt, int numMuta
 
 /* Create a mutant node of a given node */
 Pop_node * pop_mutateNode(Pop_list *popList, Pop_node *parentNode);
+
+/* Create crossover nodes from previous gen and insert into next gen */
+void pop_addCrossovers(Pop_list *pop, Pop_list *newPop, InVTable *invt, int numCrossovers);
+
+/* Create a crossover node from two given parent nodes */
+Pop_node * pop_crossover(Pop_list *newPop, InVTable *invt, Pop_node *p1, Pop_node *p2);
 #endif

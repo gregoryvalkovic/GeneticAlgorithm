@@ -169,12 +169,14 @@ int main(int argc, char *argv[]){
 				/* Add mutants to new population */
 				pop_addMutants(popList, newPopList, &invt, numMutants);
 
-				/* TODO: Fill rest of population with crossovers */
+				/* Add crossovers to the new population  */
+				pop_addCrossovers(popList, newPopList, &invt, numCrossovers);
 
 				/* Free the previous generation */
 				pop_free(popList);
 				popList = newPopList;
 				newPopList = NULL;
+
 			}
 
 			/* Calculate the fitness and normalise it */

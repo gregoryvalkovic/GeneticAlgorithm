@@ -152,9 +152,10 @@ Gene * crossover_minfn(Gene *g1, Gene *g2){
 }
 
 
+/* TEST: seems to crash when i run through mingw at line 168 (adding to raw)*/
 double eval_pcbmill(InVTable *invt, Gene *gene){
 	int i, *currPos, *nextPos;
-	double raw = 0.0;
+	double raw = 0.0, d;
 
 	/* Iterate through all but last allele */
 	for (i=0; i < gene->num_alleles - 1; i++) {
@@ -164,8 +165,13 @@ double eval_pcbmill(InVTable *invt, Gene *gene){
 		nextPos = invt->table[gene->chromosome[i+1]];
 
 		/* Calculate the distance between both points */
+		/*
 		raw += sqrt(pow(nextPos[0] - currPos[0], 2) +
 			pow(nextPos[1] - currPos[1], 2));
+		*/
+		d = pow(nextPos[0] - currPos[0], 2) + pow (nextPos[1] - currPos[1], 2);
+		d = sqrt(d);
+		raw += d;
 	}
 	return raw;
 }
