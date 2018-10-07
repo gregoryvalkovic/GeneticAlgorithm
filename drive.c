@@ -11,6 +11,7 @@
 
 /* Function Prototypes */
 void initPopList(Pop_list **popList, char *geneType, int gens);
+void cloneFittest(Pop_list *popList, Pop_list *newPopList);
 
 void test_pcbmill(void){
 	/* TO DO */
@@ -121,9 +122,9 @@ int main(int argc, char *argv[]){
 		return EXIT_SUCCESS;
 	#else
 		InVTable invt;
-		int gens, sizePop, sizeAlleles i;
-		Pop_list *popList = NULL, *newPopList;
-
+		int gens, sizePop, sizeAlleles, i;
+		Pop_list *popList, *newPopList;
+		popList = newPopList = NULL;
 
 		/* Validate all args except files */
 		inputValidation(argc, argv);
@@ -147,12 +148,15 @@ int main(int argc, char *argv[]){
 		/* Create initial population*/
 		pop_populate(popList, &invt, sizeAlleles, sizePop);
 
+		/* Print the fittest */
 		pop_print_fittest(popList);
 
 		/* Normalise the fitness, getting ready to crossover */
 		pop_normalise(popList);
 
-		/* Clone the  */
+		/* Clone the fittest gene into newPopList */
+		pop_init(&newPopList);
+		cloneFittest(popList, newPopList);
 
 		pop_free(popList);
 		return EXIT_SUCCESS;
@@ -209,6 +213,16 @@ void initPopList(Pop_list **popList, char *geneType, int gens) {
 	}
 }
 
+
+void cloneFittest(Pop_list *popList, Pop_list *newPopList) {
+	Pop_node *fittest, *fittestClone;
+	
+	fittest = pop_getFittest(popList->head);
+	fittestClone = pop_nodeCopy(popList, fittest);
+
+	assert(newPopList->head == NULL);
+	pop_insert(newPopList, fittestClone);
+}
 
 Boolean isMinFn(char *geneType) {
 	if (strcmp(geneType, CMD_ARG_MINFN) == 0) {

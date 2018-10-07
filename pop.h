@@ -52,7 +52,7 @@ void pop_initList(Pop_list *popList[], char *geneType, int gens);
 /* Normalises a population's fitness score */
 void pop_normalise(Pop_list *popList);
 
-/* Initialise a new Pop_node */
+/* Initialise a new Pop_node and its gene */
 Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles);
 
 /*	Creates new Pop_nodes from the genes in the InVTable and calculates the
@@ -65,5 +65,15 @@ void pop_nodeFree(Pop_node *node);
 
 /* Free an entire popList */
 void pop_free(Pop_list *popList);
+
+/* 	Returns a pointer to a copy of a given node. Pointer to next node
+	will be null however. */
+Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node);
+
+/* Return the fittest node in the population (the last node) */
+Pop_node * pop_getFittest (Pop_node *head);
+
+/* Inserts a node, sorted by its fitness */
+void pop_insert(Pop_list *popList, Pop_node *insertNode);
 
 #endif

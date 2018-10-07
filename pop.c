@@ -12,9 +12,6 @@
 /* Return the sum of all fitness scores in a population */
 double calcTotalFitness(Pop_list *popList);
 
-/* Return the fittest node in the population (the last node) */
-Pop_node * getFittest (Pop_node *head);
-
 /*****************************************************************************/
 						/* Provided Functions */
 
@@ -34,7 +31,7 @@ void pop_set_fns(Pop_list *p,CreateFn cf,MutateFn mf,CrossOverFn cof,EvalFn ef){
 }
 
 void pop_print_fittest(Pop_list *p){
-	Pop_node *topNode = getFittest(p->head);
+	Pop_node *topNode = pop_getFittest(p->head);
 	gene_print(topNode->gene);
 }
 
@@ -65,7 +62,7 @@ double calcTotalFitness(Pop_list *popList) {
 }
 
 
-Pop_node * getFittest (Pop_node *head) {
+Pop_node * pop_getFittest (Pop_node *head) {
 	Pop_node *currNode = head;
 	while (currNode->next != NULL) {
 		currNode = currNode->next;
@@ -129,7 +126,7 @@ void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles,
 	for (i=0; i < popSize; i++) {
 		/* Initialise new node and create the random chromosome */
 		newNode = pop_nodeInit(popList, numAlleles);
-		popList->create_rand_chrom(newNode->gene->chromosome, numAlleles);
+		newNode->gene->chromosome = popList->create_rand_chrom(numAlleles);
 
 		gene_calc_fitness(newNode->gene, popList->evaluate_fn, invt);
 		pop_insert(popList, newNode);
@@ -155,14 +152,16 @@ void pop_nodeFree(Pop_node *node) {
 	gene_free(node->gene);
 	free(node);
 }
-	free(node);
-}
 
 
-Pop_node pop_nodeCopy(Pop_list popList, Pop_node *node) {
-	Pop_node *nodeCopy;
-	/* WIP: Remember we changed init to set values to zero, no longer creates
-		the chromosome */
-	nodeCopy = pop_nodeInit(popList, node->gene->num_alleles);
+Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node) {
+	Pop_node *copyNode;
 	
+	/* Initialise the new node */
+	copyNode = pop_nodeInit(popList, node->gene->num_alleles);
+
+	/* Copy the gene */
+	gene_copy(node->gene, copyNode->gene);
+	
+	return copyNode;
 }
