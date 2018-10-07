@@ -73,4 +73,6 @@ Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node);
 /* Inserts a node, sorted by its fitness */
 void pop_insert(Pop_list *popList, Pop_node *insertNode);
 
+/* Roulette wheel selection of a node from popList */
+Pop_node * pop_rouletteSelect(Pop_list *popList);
 #endif

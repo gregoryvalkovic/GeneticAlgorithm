@@ -161,7 +161,7 @@ int main(int argc, char *argv[]){
 		/* TODO: Put one mutant into newPopList */
 
 		/* TODO: Crossover parents for the rest of the population*/
-
+		pop_rouletteSelect(popList);
 		
 		pop_free(popList);
 		return EXIT_SUCCESS;
@@ -222,9 +222,11 @@ void initPopList(Pop_list **popList, char *geneType, int gens) {
 void cloneFittest(Pop_list *popList, Pop_list *newPopList) {
 	Pop_node *fittest, *fittestClone;
 	
-	fittest = pop_getFittest(popList->head);
+	/* Make clone of fittest node in popList */
+	fittest = popList->head;
 	fittestClone = pop_nodeCopy(popList, fittest);
-
+	
+	/* Insert clone into newPopList */
 	assert(newPopList->head == NULL);
 	pop_insert(newPopList, fittestClone);
 }

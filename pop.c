@@ -156,7 +156,27 @@ Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node) {
 	return copyNode;
 }
 
-/* TODO */
-Pop_node * pop_rouletteSelect(Pop_list popList) {
+/* WIP */
+Pop_node * pop_rouletteSelect(Pop_list *popList) {
+	Pop_node *currNode = popList->head;
+	double fitSum = 0.0, threshold;
 
+	assert(popList->head != NULL);
+
+	/* Random value from 1 approaching zero */
+	threshold = rand() % 10 + 1 ;
+	threshold = 1 / threshold;
+
+	/* Iterate through the whole population */
+	while (TRUE) {
+		
+		/* Select node where threshold is reached/broken or last node */
+		fitSum += currNode->gene->fitness;
+		if (fitSum >= threshold || currNode->next == NULL) {
+			break;
+		}
+		/* On to the next node */
+		currNode = currNode->next; 
+	}
+	return currNode;
 }
