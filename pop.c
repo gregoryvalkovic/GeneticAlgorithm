@@ -35,7 +35,7 @@ void pop_print_fittest(Pop_list *p){
 }
 
 /*****************************************************************************/
-							/* My functions */
+/*************************** My functions ************************************/
 
 void pop_normalise(Pop_list *popList) {
 	Pop_node *currPop = popList->head;
@@ -97,6 +97,7 @@ void pop_insert(Pop_list *popList, Pop_node *insertNode) {
 }
 
 
+/* Initialises a node with a random chromosome */
 Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles) {
 	Pop_node *node = myMalloc(sizeof(Pop_node));
 	
@@ -110,18 +111,17 @@ Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles) {
 }
 
 
-void pop_initialPopulate(Pop_list *popList, InVTable *invt, int numAlleles,
-				  int popSize) {
+void pop_firstGen(Pop_list *pList, InVTable *invt, int numAllele, int popSize){
 	Pop_node *newNode;
 	int i;
 
 	/* Populate with appropriate number of new nodes */
 	for (i=0; i < popSize; i++) {
-		/* Initialise new node  */
-		newNode = pop_nodeInit(popList, numAlleles);
+		/* Initialise new node with a random chromosome*/
+		newNode = pop_nodeInit(pList, numAllele);
 
-		gene_calc_fitness(newNode->gene, popList->evaluate_fn, invt);
-		pop_insert(popList, newNode);
+		gene_calc_fitness(newNode->gene, pList->evaluate_fn, invt);
+		pop_insert(pList, newNode);
 	}
 }
 

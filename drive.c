@@ -134,7 +134,7 @@ int main(int argc, char *argv[]){
 		sizePop = atoi(argv[popSize]);
 		sizeAlleles = atoi(argv[alleleSize]);
 
-		/* 	Calc number of mutants and crossovers for populations
+		/* 	Calc number of mutants and crossovers for populations.
 			-1 to numCrossovers to account for the fittest gene
 			being cloned into the next generation */
 		numMutants = (sizePop * MUTATE_RATE) / 100;
@@ -147,11 +147,9 @@ int main(int argc, char *argv[]){
 			return EXIT_FAILURE;
 		}
 
-		/* Initial popList initialisation */
+		/* Create initial population with all random chromosomes*/
 		initPopList(&popList, argv[geneType]);
-
-		/* Create initial population*/
-		pop_initialPopulate(popList, &invt, sizeAlleles, sizePop);
+		pop_firstGen(popList, &invt, sizeAlleles, sizePop);
 
 		/* WIP: Loop to do the following for each generation */
 		for (i=0; i < gens; i++) {
