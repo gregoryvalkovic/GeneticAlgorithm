@@ -52,13 +52,13 @@ void pop_initList(Pop_list *popList[], char *geneType, int gens);
 /* Normalises a population's fitness score */
 void pop_normalise(Pop_list *popList);
 
-/* Initialise a new Pop_node */
+/* Initialise a new Pop_node and its gene */
 Pop_node * pop_nodeInit(Pop_list *popList, int numAlleles);
 
 /*	Creates new Pop_nodes from the genes in the InVTable and calculates the
 	fitness for each population. Note the popList passed must be initialised
 	already with appropriate values */
-void pop_populate(Pop_list *popList, InVTable *invt, int numAlleles, int popSize);
+void pop_firstGen(Pop_list *popList, InVTable *invt, int numAlleles, int popSize);
 
 /* Frees the gene, then the node */
 void pop_nodeFree(Pop_node *node);
@@ -66,4 +66,28 @@ void pop_nodeFree(Pop_node *node);
 /* Free an entire popList */
 void pop_free(Pop_list *popList);
 
+/* 	Returns a pointer to a copy of a given node. Pointer to next node
+	will be null however. */
+Pop_node * pop_nodeCopy(Pop_list *popList, Pop_node *node);
+
+/* Inserts a node, sorted by its fitness */
+void pop_insert(Pop_list *popList, Pop_node *insertNode);
+
+/* Roulette wheel selection of a node from popList */
+Pop_node * pop_rouletteSelect(Pop_list *popList);
+
+/* Sets the fitness and rawscore for every gene in a list */
+void pop_calcfitness(Pop_list *p, InVTable *invt);
+
+/* Generates mutants from the previous generation and inserts them into the new population */
+void pop_addMutants(Pop_list *pop, Pop_list *newPop, InVTable *invt, int numMutants);
+
+/* Create a mutant node of a given node */
+Pop_node * pop_mutateNode(Pop_list *popList, Pop_node *parentNode);
+
+/* Create crossover nodes from previous gen and insert into next gen */
+void pop_addCrossovers(Pop_list *pop, Pop_list *newPop, InVTable *invt, int numCrossovers);
+
+/* Create a crossover node from two given parent nodes */
+Pop_node * pop_crossover(Pop_list *newPop, InVTable *invt, Pop_node *p1, Pop_node *p2);
 #endif

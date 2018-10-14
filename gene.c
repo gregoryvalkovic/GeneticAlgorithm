@@ -6,9 +6,12 @@
 
 #include "gene.h"
 
+/* Function prototype */
+void printChrom(Gene *g);
+
 int * create_pcbmill_chrom(int numAlleles){
 	int *chrom, i, index;
-	chrom = calloc(numAlleles, sizeof(int));
+	chrom = myCalloc(numAlleles, sizeof(int));
 
 	/* Loop through possible values excluding zero */
 	for (i=1; i < numAlleles; i++) {
@@ -87,12 +90,14 @@ Gene * mutate_minfn(Gene *g){
 
 
 Gene * crossover_pcbmill(Gene *g1, Gene *g2){
-	/* TO DO */
-	int index1, index2, i, childIndex = 0;
+	int index1, index2, i, childIndex;
 
 	/* Initialise child gene */
 	Gene *child = gene_init(g1->num_alleles);
-	child->num_alleles = g1->num_alleles;
+	/* Set all child chromosomes to -1 */
+	for (i=0; i < child->num_alleles; i++) {
+		child->chromosome[i] = -1;
+	}
 
 	#ifdef DEBUG
 		index1 = 2;
@@ -105,6 +110,7 @@ Gene * crossover_pcbmill(Gene *g1, Gene *g2){
 		}while (index1 > index2);
 	#endif
 
+	childIndex = 0;
 	/* Copy the values in g1 chromosome that are between indices */
 	for (i=index1; i <= index2; i++) {
 		child->chromosome[childIndex] = g1->chromosome[i];
@@ -112,7 +118,7 @@ Gene * crossover_pcbmill(Gene *g1, Gene *g2){
 	}
 
 	i = 0;
-	/* Loop through child chromomsome */
+	/* Loop through child chromosome */
 	for (; childIndex < child->num_alleles; childIndex++) {
 
 		/* Loop in g2 to find value not already in child */
@@ -154,19 +160,20 @@ Gene * crossover_minfn(Gene *g1, Gene *g2){
 
 
 double eval_pcbmill(InVTable *invt, Gene *gene){
-	int i, *currPos, *nextPos;
-	double raw = 0.0;
+	int i, numAlleles, *currPos, *nextPos;
+	double raw = 0.0, d;
 
 	/* Iterate through all but last allele */
-	for (i=0; i < gene->num_alleles - 1; i++) {
-
+	numAlleles = gene->num_alleles;
+	for (i=0; i < numAlleles - 1; i++) {
+	
 		/* Lookup current allele and next allele in the table */
 		currPos = invt->table[gene->chromosome[i]];
 		nextPos = invt->table[gene->chromosome[i+1]];
 
 		/* Calculate the distance between both points */
-		raw += sqrt(pow(nextPos[0] - currPos[0], 2) +
-			pow(nextPos[1] - currPos[1], 2));
+		raw += sqrt(pow(nextPos[0] - currPos[0], 2) + pow(nextPos[1] - currPos[1], 2));
+
 	}
 	return raw;
 }
@@ -180,7 +187,7 @@ double eval_minfn(InVTable *invt, Gene *gene){
 	for (i=0; i < gene->num_alleles; i++) {
 		raw += invt->table[0][i] * gene->chromosome[i];
 	}
-	/* Subtract E and return the absolute value*/
+	/* Subtract E and return the absolute value */
 	return abs(raw - invt->table[0][i]);
 }
 
@@ -236,6 +243,8 @@ void gene_print(Gene *gene) {
 	printf("fit: %.3f raw:  %.3f\n", gene->fitness, gene->raw_score);
 }
 
+/*****************************************************************************/
+							/* My Functions */
 
 void gene_copy(Gene *g1, Gene *g2) {
 	int i;
@@ -252,7 +261,7 @@ void gene_copy(Gene *g1, Gene *g2) {
 
 Gene * gene_init(int numAlleles) {
 	Gene *gene = myMalloc(sizeof(Gene));
-	gene->chromosome = myCalloc(numAlleles, sizeof(int));
+	gene->chromosome = myMalloc(sizeof(int) * numAlleles);
 	gene->num_alleles = numAlleles;
 	gene->raw_score = 0.0;
 	gene->fitness = 0.0;
@@ -269,4 +278,15 @@ Boolean chromosomeHas(Gene *g, int x) {
 			return TRUE;
 	}
 	return FALSE;
+}
+
+/* For testing */
+void printChrom(Gene *g) {
+	int i;
+
+	printf("chrom: ");
+	for (i=0; i < g->num_alleles; i++) {
+		printf("%3d", g->chromosome[i]);
+	}
+	printf("\n");
 }
